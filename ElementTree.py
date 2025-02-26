@@ -27,8 +27,12 @@ class xml_info:
 
     def createDeviceInfo(self):
         for child in self.root.iter():
-            print(child.attrib.get(), child.text)
-            #hej
+            if "PhysicalLayer" in child.attrib:
+                print(child.tag, child.attrib, child.text)
+                for ch in child.iter():
+                    print('ch: ', ch.attrib) #
+            #print(child.tag, child.attrib, child.text) Bra att komma ihåg
+            
             
             """if "vlan" in child.tag:
                 print('VLAN:', child.attrib.get)
@@ -43,7 +47,7 @@ class xml_info:
 
 
 if __name__ == "__main__":
-    xml = xml_info(r'Kod\ProjectSmall.xml')
+    xml = xml_info(r'Kod\NDT\sample_xml\Project-3.0.xml')
     #xml.findDevices()
     #print(xml.showDevices())
     xml.createDeviceInfo()
