@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Version="3.0" xmlns="http://westermo.com/weconfig">
+  <Settings>
+    <BackupSchedule>
+      <StartTime>2023-11-07T14:15:00.0000000+01:00</StartTime>
+      <Periodicity>30.00:00:00</Periodicity>
+      <Enabled>false</Enabled>
+    </BackupSchedule>
+    <SnmpReadCommunity>laT9kIlRNwenAL/Oj9TXhg==</SnmpReadCommunity>
+    <AutoUpdateSNMP>false</AutoUpdateSNMP>
+    <ShowHostnameAndLocation>false</ShowHostnameAndLocation>
+    <SnmpAutoRefreshInterval>0</SnmpAutoRefreshInterval>
+    <AlarmMonitoring>
+      <CacheExpirationTime>1.00:00:00</CacheExpirationTime>
+      <Enabled>false</Enabled>
+      <ShouldCombineLinkAndFrntDownAlarms>false</ShouldCombineLinkAndFrntDownAlarms>
+      <EventLogging>
+        <Enabled>false</Enabled>
+        <ExportDirectoryPath></ExportDirectoryPath>
+        <LinesPerCsvFile>1000</LinesPerCsvFile>
+      </EventLogging>
+    </AlarmMonitoring>
+    <AutoDiscoverUnits>false</AutoDiscoverUnits>
+    <SyslogSettings>
+      <Enabled>false</Enabled>
+      <LineRetainCount>2000</LineRetainCount>
+    </SyslogSettings>
+  </Settings>
+  <PhysicalNetwork>
+    <Nodes>
+      <Device SchemaVersion="1" Id="a80f1106-01c5-42ea-a254-47e9df0d05ec" Family="Lynx" Model="L110-F2G" FirmwareVersion="4.33.1-rc2" xmlns="http://westermo.com/weconfig/device/weos4">
+        <ManagementIpAddress>198.18.2.143</ManagementIpAddress>
+        <IpConflict>false</IpConflict>
+        <IsManuallyAdded>false</IsManuallyAdded>
+        <LastContactUtc>2023-11-08T14:06:39.2617065Z</LastContactUtc>
+        <AdminPassword>OWj2r22W+oG2gzMDpkeOVA==</AdminPassword>
+        <SshPort>22</SshPort>
+        <HttpPort>80</HttpPort>
+        <HttpsPort>443</HttpsPort>
+        <Hostname>else24</Hostname>
+        <Location>the2n5</Location>
+        <SystemUptime>100620</SystemUptime>
+        <ChassisTemperature>39</ChassisTemperature>
+        <Netmask>255.255.255.0</Netmask>
+        <SerialNumber>6149</SerialNumber>
+        <ChassisId Type="MacAddress">00:07:7C:04:77:00</ChassisId>
+        <Interfaces>
+          <Interface Name="vlan1">
+            <Address Value="198.18.2.143/24" IsDhcp="false" IsStatic="false" IsLinkLocal="false" />
+          </Interface>
+        </Interfaces>
+        <IsRouter>false</IsRouter>
+        <BackupBaseline>2023-11-07 13:33:04Z</BackupBaseline>
+        <FirmwareBackupVersion>4.33.1-rc2</FirmwareBackupVersion>
+        <AvailableMemory>17204</AvailableMemory>
+        <CpuUsage1>76</CpuUsage1>
+        <CpuUsage5>42</CpuUsage5>
+        <CpuUsage15>24</CpuUsage15>
+        <SumAlarm>Yes</SumAlarm>
+        <Power1>Low</Power1>
+        <Power2>High</Power2>
+        <Architecture>mxc</Architecture>
+        <Platform>Basis</Platform>
+        <Product>Lynx</Product>
+        <ArticleNumber>3643-0100-004</ArticleNumber>
+        <BootLoaderVersion>2017.12.0-10</BootLoaderVersion>
+        <Vlans>
+          <Vlan Vid="1" IsEnabled="true" InterfaceName="vlan1">
+            <UntaggedPort>1</UntaggedPort>
+            <UntaggedPort>2</UntaggedPort>
+            <UntaggedPort>3</UntaggedPort>
+            <UntaggedPort>4</UntaggedPort>
+            <UntaggedPort>5</UntaggedPort>
+            <UntaggedPort>6</UntaggedPort>
+            <UntaggedPort>7</UntaggedPort>
+            <UntaggedPort>8</UntaggedPort>
+            <UntaggedPort>9</UntaggedPort>
+            <UntaggedPort>10</UntaggedPort>
+          </Vlan>
+        </Vlans>
+        <RoutingTable>
+          <Content>S - Static | C - Connected | K - Kernel route  | &gt; - Selected route
+O - OSPF   | R - RIP       | [Distance/Metric] | * - Active route
+
+C&gt;* 127.0.0.0/8 is directly connected, lo
+C&gt;* 198.18.2.0/24 is directly connected, vlan1</Content>
+          <Timestamp>2023-11-08T14:06:55.2448801Z</Timestamp>
+          <Entries>
+            <Entry Type="Connected" SubnetAddress="127.0.0.0/8" IsFibRoute="true" IsSelected="true" Interface="lo" />
+            <Entry Type="Connected" SubnetAddress="198.18.2.0/24" IsFibRoute="true" IsSelected="true" Interface="vlan1" />
+          </Entries>
+        </RoutingTable>
+        <Frnt>
+          <V0 IsFocalPoint="true" Id="1">
+            <PortM HelloTime="100">
+              <Name Name="ETH 3" />
+            </PortM>
+            <Coupling IsEnabled="true" HelloTime="100" />
+          </V0>
+          <V2>
+            <Ring Id="2" IsFocalPoint="true" IsGuardedRecovery="false" RingInterval="500">
+              <RingPort HelloTime="500">
+                <Name Name="ETH 8" />
+              </RingPort>
+              <RingPort HelloTime="500">
+                <Name Name="ETH 6" />
+              </RingPort>
+            </Ring>
+          </V2>
+        </Frnt>
+        <Mrp>
+          <Ring Id="1" IsManager="false" IsEnabled="true" ProfileMode="200" IsReactingToLinkChanges="false">
+            <PortM>
+              <Name Name="ETH 1" />
+            </PortM>
+            <PortN>
+              <Name Name="ETH 2" />
+            </PortN>
+          </Ring>
+        </Mrp>
+        <Ports>
+          <Port PhysicalLayer="EthernetFiber" InterfaceIndex="4096" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 1" />
+            <PortId Type="MacAddress">00:07:7C:04:77:01</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetFiber" InterfaceIndex="4097" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 2" />
+            <PortId Type="MacAddress">00:07:7C:04:77:02</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4098" IsManuallyAdded="false" Up="true">
+            <Name Name="ETH 3" />
+            <PortId Type="MacAddress">00:07:7C:04:77:03</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4099" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 4" />
+            <PortId Type="MacAddress">00:07:7C:04:77:04</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4100" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 5" />
+            <PortId Type="MacAddress">00:07:7C:04:77:05</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4101" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 6" />
+            <PortId Type="MacAddress">00:07:7C:04:77:06</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4102" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 7" />
+            <PortId Type="MacAddress">00:07:7C:04:77:07</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4103" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 8" />
+            <PortId Type="MacAddress">00:07:7C:04:77:08</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4104" IsManuallyAdded="false" Up="false">
+            <Name Name="ETH 9" />
+            <PortId Type="MacAddress">00:07:7C:04:77:09</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4105" IsManuallyAdded="false" Up="true">
+            <Name Name="ETH 10" />
+            <PortId Type="MacAddress">00:07:7C:04:77:0A</PortId>
+          </Port>
+        </Ports>
+        <Position X="-3.171387464731069" Y="8.92053813988484" xmlns="http://westermo.com/weconfig" />
+      </Device>
+      <Device SchemaVersion="1" Id="3260052c-bf7b-41e3-9203-0716f9eb5795" Family="Wolverine" Model="DDW-142" FirmwareVersion="4.29.0" xmlns="http://westermo.com/weconfig/device/weos4">
+        <ManagementIpAddress>198.18.2.142</ManagementIpAddress>
+        <IpConflict>false</IpConflict>
+        <IsManuallyAdded>false</IsManuallyAdded>
+        <LastContactUtc>2023-11-08T13:57:58.2586806Z</LastContactUtc>
+        <AdminPassword>OWj2r22W+oG2gzMDpkeOVA==</AdminPassword>
+        <SshPort>22</SshPort>
+        <HttpPort>80</HttpPort>
+        <HttpsPort>443</HttpsPort>
+        <Hostname>try22</Hostname>
+        <Location>whateve2r3</Location>
+        <SystemUptime>8011182</SystemUptime>
+        <ChassisTemperature>45</ChassisTemperature>
+        <Netmask>255.255.255.0</Netmask>
+        <SerialNumber>4324</SerialNumber>
+        <ChassisId Type="MacAddress">00:07:7C:10:87:C0</ChassisId>
+        <Interfaces>
+          <Interface Name="vlan1">
+            <Address Value="198.18.2.142/24" IsDhcp="false" IsStatic="false" IsLinkLocal="false" />
+          </Interface>
+        </Interfaces>
+        <IsRouter>false</IsRouter>
+        <FirmwareBackupVersion>4.14.2</FirmwareBackupVersion>
+        <AvailableMemory>18652</AvailableMemory>
+        <CpuUsage1>3</CpuUsage1>
+        <CpuUsage5>6</CpuUsage5>
+        <CpuUsage15>10</CpuUsage15>
+        <SumAlarm>No</SumAlarm>
+        <Power1>Low</Power1>
+        <Power2>High</Power2>
+        <Architecture>mxc</Architecture>
+        <Platform>Basis</Platform>
+        <Product>Wolverine</Product>
+        <ArticleNumber>3642-0300-005</ArticleNumber>
+        <BootLoaderVersion>2017.12.0-10</BootLoaderVersion>
+        <Vlans>
+          <Vlan Vid="1" IsEnabled="true" InterfaceName="vlan1">
+            <UntaggedPort>1</UntaggedPort>
+            <UntaggedPort>2</UntaggedPort>
+          </Vlan>
+          <Vlan Vid="2" IsEnabled="false" InterfaceName="vlan2">
+            <UntaggedPort>DSL 1</UntaggedPort>
+            <UntaggedPort>DSL 2</UntaggedPort>
+          </Vlan>
+        </Vlans>
+        <RoutingTable>
+          <Content>S - Static | C - Connected | K - Kernel route  | &gt; - Selected route
+O - OSPF   | R - RIP       | [Distance/Metric] | * - Active route
+
+C&gt;* 127.0.0.0/8 is directly connected, lo
+C&gt;* 198.18.2.0/24 is directly connected, vlan1</Content>
+          <Timestamp>2023-11-08T14:58:07.7530735+01:00</Timestamp>
+          <Entries>
+            <Entry Type="Connected" SubnetAddress="127.0.0.0/8" IsFibRoute="true" IsSelected="true" Interface="lo" />
+            <Entry Type="Connected" SubnetAddress="198.18.2.0/24" IsFibRoute="true" IsSelected="true" Interface="vlan1" />
+          </Entries>
+        </RoutingTable>
+        <Frnt>
+          <V0 IsFocalPoint="false" Id="1">
+            <PortM HelloTime="100">
+              <Name Name="ETH 2" />
+            </PortM>
+            <PortN HelloTime="100">
+              <Name Name="ETH 1" />
+            </PortN>
+            <Coupling IsEnabled="true" HelloTime="100">
+              <Uplink Priority="128" Adjustment="0" EchoInterval="200">
+                <Port>
+                  <Name Name="DSL 1" />
+                </Port>
+              </Uplink>
+            </Coupling>
+          </V0>
+          <V2 />
+        </Frnt>
+        <Ports>
+          <Port PhysicalLayer="DslCable" InterfaceIndex="4096" IsManuallyAdded="false" Up="false">
+            <Name Name="DSL 1" />
+            <PortId Type="MacAddress">00:07:7C:10:87:C1</PortId>
+          </Port>
+          <Port PhysicalLayer="DslCable" InterfaceIndex="4097" IsManuallyAdded="false" Up="false">
+            <Name Name="DSL 2" />
+            <PortId Type="MacAddress">00:07:7C:10:87:C2</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4098" IsManuallyAdded="false" Up="true">
+            <Name Name="ETH 1" />
+            <PortId Type="MacAddress">00:07:7C:10:87:C3</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="4099" IsManuallyAdded="false" Up="true">
+            <Name Name="ETH 2" />
+            <PortId Type="MacAddress">00:07:7C:10:87:C4</PortId>
+          </Port>
+        </Ports>
+        <Position X="93.16287942068323" Y="128.91244060828822" xmlns="http://westermo.com/weconfig" />
+      </Device>
+      <WeConfigPc>
+        <Position X="180.46179778689998" Y="0.23089889344998937" />
+      </WeConfigPc>
+    </Nodes>
+    <Connections>
+      <AggregatePortConnection SourceDeviceId="3260052c-bf7b-41e3-9203-0716f9eb5795" TargetDeviceId="a80f1106-01c5-42ea-a254-47e9df0d05ec">
+        <PortConnection>
+          <SourceDevicePort>
+            <Name Name="ETH 2" xmlns="http://westermo.com/weconfig/device/weos4" />
+          </SourceDevicePort>
+          <TargetDevicePort>
+            <Name Name="ETH 3" xmlns="http://westermo.com/weconfig/device/weos4" />
+          </TargetDevicePort>
+        </PortConnection>
+      </AggregatePortConnection>
+      <WeConfigConnection DeviceId="a80f1106-01c5-42ea-a254-47e9df0d05ec">
+        <Name Name="ETH 10" xmlns="http://westermo.com/weconfig/device/weos4" />
+      </WeConfigConnection>
+    </Connections>
+  </PhysicalNetwork>
+  <LogicalNetworks>
+    <LogicalNetwork Name="Logical Network">
+      <RootLayer>
+        <Nodes>
+          <DeviceNode PhysicalDeviceId="a80f1106-01c5-42ea-a254-47e9df0d05ec" X="0" Y="0" />
+          <WeConfigNode X="180" Y="0" />
+          <LayerNode X="90" Y="0">
+            <Layer Name="yes">
+              <Nodes>
+                <LayerNode X="90" Y="0">
+                  <Layer Name="yere">
+                    <Nodes>
+                      <LayerNode X="90" Y="0">
+                        <Layer Name="y">
+                          <Nodes>
+                            <DeviceNode PhysicalDeviceId="3260052c-bf7b-41e3-9203-0716f9eb5795" X="90" Y="0" />
+                          </Nodes>
+                        </Layer>
+                      </LayerNode>
+                    </Nodes>
+                    <ViewPort X="90" Y="0" Width="0" Height="0" />
+                  </Layer>
+                </LayerNode>
+              </Nodes>
+              <ViewPort X="90" Y="0" Width="77" Height="77" />
+            </Layer>
+          </LayerNode>
+        </Nodes>
+        <ViewPort X="0" Y="0" Width="257" Height="77" />
+      </RootLayer>
+    </LogicalNetwork>
+  </LogicalNetworks>
+</Project>
