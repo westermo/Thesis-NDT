@@ -18,7 +18,7 @@ class xml_info:
 
     def deviceList(self, child): 
         #self.device_list.append(child.attrib.get('Family')) om lista istället för dict
-        self.device_list [child.attrib.get('Id')] = {}
+        self.device_list[child.attrib.get('Id')] = {}
         self.device_list[child.attrib.get('Id')][child.attrib.get('Family')] = child.attrib.get('Model')
         return True
 
@@ -28,9 +28,11 @@ class xml_info:
     def createDeviceInfo(self):
         for child in self.root.iter():
             if "PhysicalLayer" in child.attrib:
-                print(child.tag, child.attrib, child.text)
+                #print(child.tag, child.attrib, child.text)
                 for ch in child.iter():
-                    print('ch: ', ch.attrib) #
+                    if ch.get('Name') is not None:
+                        print('ch: ', ch.get('Name')) 
+            
             #print(child.tag, child.attrib, child.text) Bra att komma ihåg
             
             
@@ -48,7 +50,7 @@ class xml_info:
 
 if __name__ == "__main__":
     xml = xml_info(r'Kod\NDT\sample_xml\Project-3.0.xml')
-    #xml.findDevices()
-    #print(xml.showDevices())
+    xml.findDevices()
+    print(xml.showDevices())
     xml.createDeviceInfo()
     #print(xml.showDeviceInfo())
