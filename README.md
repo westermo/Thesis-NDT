@@ -2,7 +2,7 @@
 
 ## Description
 We aim to create a network digital twin/shadow that takes a xml file from WeConfig and recreates the topology and configuration in gns3.
-
+![image info](implementation/.png)
 
 
 ## Installation
