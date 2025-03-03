@@ -110,6 +110,7 @@ devices_dict = {
 device_list = []
 
 # Iterate through the Example dictionary and create Device objects
+# see https://stackoverflow.com/questions/3294889/iterating-over-dictionaries-using-for-loops
 for device_id, device_data in devices_dict.items():
     # Create a new Device object
     device = Device()
@@ -117,6 +118,7 @@ for device_id, device_data in devices_dict.items():
     # Set device attributes (excluding ports)
     for attr_name, attr_value in device_data.items():
         if attr_name != "ports":
+            # setting the attributes of the object here.
             setattr(device, attr_name, attr_value)
     
     # Don't override the id with the dictionary key
