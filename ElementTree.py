@@ -13,44 +13,56 @@ class xml_info:
             if 'Family' in child.attrib:
                 #print('Device: ', child.attrib)
                 #print('Family: ', child.attrib.get('Family'))
-                print('-' * 15)
+                #print('-' * 15)
                 self.deviceList(child)
 
     def deviceList(self, child): 
-        #self.device_list.append(child.attrib.get('Family')) om lista istället för dict
         self.device_list[child.attrib.get('Id')] = {}
         self.device_list[child.attrib.get('Id')][child.attrib.get('Family')] = child.attrib.get('Model')
-        return True
+
 
     def showDeviceInfo(self):
         return self.device_info
 
     def createDeviceInfo(self):
+        dev_id = None
         for child in self.root.iter():
+            if 'Family' in child.attrib:
+                dev_id = child.attrib.get('Id')
+                #print('dev id: ', dev_id)
+
             if "PhysicalLayer" in child.attrib:
-                #print(child.tag, child.attrib, child.text)
                 for ch in child.iter():
                     if ch.get('Name') is not None:
-                        print('ch: ', ch.get('Name')) 
-            
-            #print(child.tag, child.attrib, child.text) Bra att komma ihåg
-            
-            
-            """if "vlan" in child.tag:
-                print('VLAN:', child.attrib.get)
+                        self.getPortInfo(child, ch, dev_id)
 
-            for ch in child:
-                if "vlan" in ch.attrib:
-                    self.device_info[child.attrib.get('Id')] = {}
-                    self.device_info[child.attrib.get('Id')][ch.attrib('Name')]"""
+
+    def getPortInfo(self, child, ch, dev_id):
+        if dev_id not in self.device_list:
+            self.device_list[dev_id] = {'Ports': {}}
+        if 'Ports' not in self.device_list[dev_id]:
+            self.device_list[dev_id]['Ports'] = {}
+        if ch.get('Name') not in self.device_list[dev_id]['Ports']:
+            self.device_list[dev_id]['Ports'][ch.get('Name')] = {}
+
+        self.device_list[dev_id]['Ports'][ch.get('Name')] = {}
+        #self.device_list[dev_id]['Ports'][ch.get('Name')]
+        #print('Port information: ', ch.get('Name'), child.attrib['Up'], '| Mac: ', )
+        self.device_list[dev_id]['Ports'][ch.get('Name')]['Up'] = child.attrib['Up']
+
+
+
+
 
     def showDevices(self):
         return self.device_list
 
 
 if __name__ == "__main__":
-    xml = xml_info(r'Kod\NDT\sample_xml\Project-3.0.xml')
+    xml = xml_info(r'sample_xml\Project-3.0.xml')
     xml.findDevices()
     print(xml.showDevices())
     xml.createDeviceInfo()
-    #print(xml.showDeviceInfo())
+    print('-' * 15)
+    print(xml.showDevices())
+ 
