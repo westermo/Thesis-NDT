@@ -11,9 +11,6 @@ class xml_info:
     def findDevices(self):
         for child in self.root.iter():
             if 'Family' in child.attrib:
-                #print('Device: ', child.attrib)
-                #print('Family: ', child.attrib.get('Family'))
-                #print('-' * 15)
                 self.deviceList(child)
 
     def deviceList(self, child): 
@@ -30,10 +27,8 @@ class xml_info:
     def createDeviceInfo(self):
         dev_id = None
         for child in self.root.iter():
-            #print('Child: ', child)
             if 'Family' in child.attrib:
                 dev_id = child.attrib.get('Id')
-                #print('dev id: ', dev_id)
 
             if "PhysicalLayer" in child.attrib:
                 for ch in child.iter():
