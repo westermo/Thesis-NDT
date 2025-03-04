@@ -27,6 +27,7 @@ class xml_info:
     def createDeviceInfo(self):
         dev_id = None
         for child in self.root.iter():
+            #print('Child: ', child)
             if 'Family' in child.attrib:
                 dev_id = child.attrib.get('Id')
                 #print('dev id: ', dev_id)
@@ -46,11 +47,11 @@ class xml_info:
             self.device_list[dev_id]['Ports'][ch.get('Name')] = {}
 
         self.device_list[dev_id]['Ports'][ch.get('Name')] = {}
-        #self.device_list[dev_id]['Ports'][ch.get('Name')]
-        #print('Port information: ', ch.get('Name'), child.attrib['Up'], '| Mac: ', )
         self.device_list[dev_id]['Ports'][ch.get('Name')]['Up'] = child.attrib['Up']
-
-
+        for mac in child.iter():
+            typ = mac.get('Type')
+            if typ is not None: 
+                self.device_list[dev_id]['Ports'][ch.get('Name')][typ] = mac.text
 
 
 
