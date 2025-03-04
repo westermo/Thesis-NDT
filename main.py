@@ -1,24 +1,23 @@
-class Device:
-    def __init__(self, name=None):
-        self.name = name           # Str: Hostname?
-        self.id = None             # Str: ID from xml?
-        self.position = None       # Tuple[int, int]: (x, y)
-        self.family = None         # Str: "Lynx"
-        self.model = None          # Str: "L110-F2G"
-        self.image = None          # Str: "WeOS-5.24"
-        self.ip_address = None     # Str: "198.18.2.143"
-        self.net_mask = None       # Str: "255.255.255.0"
-        self.ports = {}            # Dict[str, Port]: 
+from dataclasses import fields
+from typing import Dict, Any, Type, Set
+from data_model import Device, Port
 
-class Port:
-    def __init__(self, name=None):
-        self.name = name           # Str: "GigabitEthernet1/0/1"
-        self.id = None             # Str or Int: "Gi1/0/1" or 101
-        self.mac_address = None    # Str: "00:07:7C:4D:31:C1"
-        self.up = None             # Bool: True=up, False=down
+def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
+    """
+    Validate that dictionary keys match dataclass fields (excluding specified fields).
+    Raises ValueError if there's any mismatch.
+    """
+    exclude_fields = exclude_fields or []
+    dataclass_fields = {field.name for field in fields(dataclass_type) if field.name not in exclude_fields}
+    dict_keys = set(data_dict.keys())
+    
+    if dataclass_fields != dict_keys:
+        raise ValueError(f"Dictionary keys don't exactly match {dataclass_type.__name__} fields")
+    
+    return True
 
 # Example dictionary of devices
-devices_dict = {
+devices_dict: Dict[str, Dict[str, Any]] = {
     "device1": {
         "name": "redfox-4d-31-c0",
         "id": "a80f1106-01c5-42ea-a254-47e9df0d05ec",
@@ -105,62 +104,37 @@ devices_dict = {
     }
 }
 
-
 # list to store devices
-device_list = []
+device_list: list[Device] = []
 
 # Iterate through the Example dictionary and create Device objects
-# see https://stackoverflow.com/questions/3294889/iterating-over-dictionaries-using-for-loops
 for device_id, device_data in devices_dict.items():
-    # Create a new Device object
-    device = Device()
+    # Extract ports data for separate handling
+    # pop() removes the key from the dictionary
+    ports_data = device_data.pop("ports", {})
     
-    # Set device attributes (excluding ports)
-    for attr_name, attr_value in device_data.items():
-        if attr_name != "ports":
-            # setting the attributes of the object here.
-            setattr(device, attr_name, attr_value)
-    
-    # Don't override the id with the dictionary key
-    # device.id = device_id
-    
-    # Process ports if they exist
-    if "ports" in device_data:
-        for port_id, port_data in device_data["ports"].items():
-            # Create a new Port object
-            port = Port()
-            
-            # Set port attributes
-            for port_attr, port_value in port_data.items():
-                setattr(port, port_attr, port_value)
-            
-            # Add the port to the device's ports dictionary
+    try:
+        # validate dictionary keys
+        validate_dict_keys(device_data, Device, ["ports"])
+        device = Device(**device_data)
+        
+        # Process ports
+        for port_id, port_data in ports_data.items():
+            # validate dictionary keys
+            validate_dict_keys(port_data, Port)
+            port = Port(**port_data)
             device.ports[port_id] = port
-    
-    # Add the device to our list
-    device_list.append(device)
+        
+        # Add the device to our list
+        device_list.append(device)
+        
+    except Exception as e:
+        print(f"Error creating device {device_id}: {e}")
+    finally:
+        # Put ports back in device_data for future reference
+        device_data["ports"] = ports_data
 
-"""
-for device in device_list:
-    print(f"\nDevice Details for: {device.name}")
-    print(f"ID: {device.id}")
-    print(f"Position: {device.position}")
-    print(f"Family: {device.family}")
-    print(f"Model: {device.model}")
-    print(f"Image: {device.image}")
-    print(f"IP Address: {device.ip_address}")
-    print(f"Net Mask: {device.net_mask}")
-    
-    print("Ports:")
-    for port_id, port in device.ports.items():
-        print(f"  Port: {port.name}")
-        print(f"    ID: {port.id}")
-        print(f"    MAC Address: {port.mac_address}")
-        print(f"    Status: {'Up' if port.up else 'Down'}")
-    
-    print("-" * 50)  # Add a separator between devices
-"""
-
+# Print device details
 for device in device_list:
     print(f"\nDevice Details for: {device.name}")
     for attr, value in device.__dict__.items():
