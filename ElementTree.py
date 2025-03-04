@@ -18,6 +18,9 @@ class xml_info:
 
     def deviceList(self, child): 
         self.device_list[child.attrib.get('Id')] = {}
+        for hostname in child:
+            if 'Hostname' in hostname.tag:
+                self.device_list[child.attrib.get('Id')]['Hostname'] = hostname.text
         self.device_list[child.attrib.get('Id')][child.attrib.get('Family')] = child.attrib.get('Model')
 
 
@@ -55,8 +58,11 @@ class xml_info:
 
 
 
-    def showDevices(self):
-        return self.device_list
+    def showDevices(self, dict = None):
+        if dict:
+            return self.device_list[dict]
+        else:
+            return self.device_list
 
 
 if __name__ == "__main__":
@@ -65,5 +71,8 @@ if __name__ == "__main__":
     print(xml.showDevices())
     xml.createDeviceInfo()
     print('-' * 15)
-    print(xml.showDevices())
+    #print(xml.showDevices())
+    print('Device: ', xml.showDevices('a80f1106-01c5-42ea-a254-47e9df0d05ec'))
+    print('-' * 20)
+    print('Device: ', xml.showDevices('3260052c-bf7b-41e3-9203-0716f9eb5795'))
  
