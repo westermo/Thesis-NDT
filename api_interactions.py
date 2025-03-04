@@ -1,1 +1,100 @@
-# will handle all API communication with GNS3
+import requests
+import yaml
+import logging
+from typing import Dict, Any, Optional, List, Tuple
+
+class GNS3ApiError(Exception):
+    """Custom exception for GNS3 API errors."""
+    pass
+
+class GNS3ApiClient:
+    """Client for interacting with the GNS3 API."""
+
+    def __init__(self, config_path: str = "config.yaml"):
+        """Initialize the GNS3 API client with configuration."""
+        self.config = self._load_config(config_path)
+        self.base_url = f"{self.config['gns3_server']['protocol']}://{self.config['gns3_server']['host']}:{self.config['gns3_server']['port']}/v2"
+        self.session = requests.Session()
+        
+        # Set up authentication if configured
+        if 'username' in self.config['gns3_server'] and 'password' in self.config['gns3_server']:
+            self.session.auth = (self.config['gns3_server']['username'], self.config['gns3_server']['password'])
+            
+        # Set up logging
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger(__name__)
+        
+    def _load_config(self, config_path: str) -> Dict[str, Any]:
+        """Load configuration from a YAML file."""
+        try:
+            with open(config_path, 'r') as file:
+                return yaml.safe_load(file)
+        except Exception as e:
+            raise GNS3ApiError(f"Failed to load configuration: {str(e)}")
+    
+    def _request(self, method: str, endpoint: str, data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Make a request to the GNS3 API."""
+        url = f"{self.base_url}/{endpoint}"
+        self.logger.debug(f"Making {method} request to {url}")
+        
+        try:
+            if method.lower() == 'get':
+                response = self.session.get(url)
+            elif method.lower() == 'post':
+                response = self.session.post(url, json=data)
+            elif method.lower() == 'put':
+                response = self.session.put(url, json=data)
+            elif method.lower() == 'delete':
+                response = self.session.delete(url)
+            else:
+                raise GNS3ApiError(f"Unsupported HTTP method: {method}")
+        
+            response.raise_for_status()
+            return response.json() if response.content else {}
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"API request failed: {str(e)}")
+            raise GNS3ApiError(f"API request failed: {str(e)}")
+    
+    def get_projects(self) -> List[Dict[str, Any]]:
+        """Get all projects."""
+        return self._request('get', 'projects')
+    
+    def create_project(self, name: str) -> Dict[str, Any]:
+        """Create a new project."""
+        data = {"name": name}
+        return self._request('post', 'projects', data)
+    
+    def get_project(self, project_id: str) -> Dict[str, Any]:
+        """Get project details by ID."""
+        return self._request('get', f'projects/{project_id}')
+    
+    def delete_project(self, project_id: str) -> Dict[str, Any]:
+        """Delete a project by ID."""
+        return self._request('delete', f'projects/{project_id}')
+    
+    # def create_node(self, project_id: str, name: str, template_id: str, 
+    #                position: Tuple[float, float]) -> Dict[str, Any]:
+    #     """Create a new node in the project."""
+    #     data = {
+    #         "name": name,
+    #         "template_id": template_id,
+    #         "x": position[0],
+    #         "y": position[1]
+    #     }
+    #     return self._request('post', f'projects/{project_id}/nodes', data)
+    
+    def get_nodes(self, project_id: str) -> List[Dict[str, Any]]:
+        """Get all nodes in a project."""
+        return self._request('get', f'projects/{project_id}/nodes')
+    
+    def get_node(self, project_id: str, node_id: str) -> Dict[str, Any]:
+        """Get node details by ID."""
+        return self._request('get', f'projects/{project_id}/nodes/{node_id}')
+    
+    def delete_node(self, project_id: str, node_id: str) -> Dict[str, Any]:
+        """Delete a node by ID."""
+        return self._request('delete', f'projects/{project_id}/nodes/{node_id}')
+    
+    def get_templates(self) -> List[Dict[str, Any]]:
+        """Get all available templates/appliances."""
+        return self._request('get', 'templates')

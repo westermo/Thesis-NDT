@@ -148,3 +148,15 @@ for device in device_list:
             print(f"    {port_attr}: {port_value}")
     
     print("-" * 50)
+
+print("\nTesting GNS3 API and Topology Builder")
+print("-" * 50)
+
+from api_interactions import GNS3ApiClient
+from topology_builder import TopologyBuilder
+
+print("Testing connection to GNS3 server...")
+api_client = GNS3ApiClient()
+projects = api_client.get_projects()
+print(f"Connection successful! Found {len(projects)} projects.")
+
