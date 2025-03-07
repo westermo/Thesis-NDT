@@ -2,6 +2,11 @@ from dataclasses import dataclass, field
 from typing import Dict, Tuple, Optional, Any
 
 @dataclass
+class Vlan:
+    name: Optional[str] = None
+    address: Optional[str] = None
+
+@dataclass
 class Port:
     name: Optional[str] = None
     id: Optional[Any] = None  # Using Any since it could be str or int
@@ -19,3 +24,4 @@ class Device:
     ip_address: Optional[str] = None
     net_mask: Optional[str] = None
     ports: Dict[str, Port] = field(default_factory=dict)
+    vlans: Dict[str, Vlan] = field(default_factory=dict)
