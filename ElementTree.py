@@ -19,20 +19,20 @@ class xml_info:
     def deviceList(self, child): 
         self.device_list[child.attrib.get('Id')] = device = {}
         addresses = ''
-        device['Position'] = {}
+        device['position'] = {}
         for hostInfo in child.iter():
             if 'Hostname' in hostInfo.tag:
-                self.device_list[child.attrib.get('Id')]['Hostname'] = hostInfo.text
+                self.device_list[child.attrib.get('Id')]['name'] = hostInfo.text
             if 'Position' in hostInfo.tag:
                 pos =  round(float(hostInfo.attrib['X']), 2), round(float(hostInfo.attrib['Y']), 2)
-                self.device_list[child.attrib.get('Id')]['Position'] = tuple(pos)
+                self.device_list[child.attrib.get('Id')]['position'] = tuple(pos)
             if 'ManagementIpAddress' in hostInfo.tag:
                 addresses = hostInfo.text
-        device['Family'] = child.attrib.get('Family')
-        device['Model']= child.attrib.get('Model')
-        device['Image' ]= f'WeOs{child.attrib.get('FirmwareVersion')}'
-        self.device_list[child.attrib.get('Id')]['Addresses'] = {}
-        self.device_list[child.attrib.get('Id')]['Addresses']['Management'] = addresses
+        device['family'] = child.attrib.get('Family')
+        device['model']= child.attrib.get('Model')
+        device['image' ]= f'WeOs{child.attrib.get('FirmwareVersion')}'
+        self.device_list[child.attrib.get('Id')]['addresses'] = {}
+        self.device_list[child.attrib.get('Id')]['addresses']['Management'] = addresses
 
     def getVlans(self, child):
         self.device_list[child.attrib.get('Id')]['vlans'] = {}
@@ -56,18 +56,18 @@ class xml_info:
 
     def getPortInfo(self, child, ch, dev_id): #Everything with ports 
         if dev_id not in self.device_list:
-            self.device_list[dev_id] = {'Ports': {}}
+            self.device_list[dev_id] = {'ports': {}}
         if 'Ports' not in self.device_list[dev_id]:
-            self.device_list[dev_id]['Ports'] = {}
-        if ch.get('Name') not in self.device_list[dev_id]['Ports']:
-            self.device_list[dev_id]['Ports'][ch.get('Name')] = {}
+            self.device_list[dev_id]['ports'] = {}
+        if ch.get('Name') not in self.device_list[dev_id]['ports']:
+            self.device_list[dev_id]['ports'][ch.get('Name')] = {}
 
-        self.device_list[dev_id]['Ports'][ch.get('Name')] = {}
-        self.device_list[dev_id]['Ports'][ch.get('Name')]['Up'] = child.attrib['Up']
+        self.device_list[dev_id]['ports'][ch.get('Name')] = {}
+        self.device_list[dev_id]['ports'][ch.get('Name')]['Up'] = child.attrib['Up']
         for mac in child.iter():
             typ = mac.get('Type')
             if typ is not None: 
-                self.device_list[dev_id]['Ports'][ch.get('Name')][typ] = mac.text
+                self.device_list[dev_id]['ports'][ch.get('Name')][typ] = mac.text
         
     def showDeviceInfo(self):
         return self.device_info
