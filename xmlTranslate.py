@@ -30,7 +30,7 @@ class xml_info:
                 addresses = hostInfo.text
         device['family'] = child.attrib.get('Family')
         device['model']= child.attrib.get('Model')
-        device['image' ]= f'WeOs{child.attrib.get('FirmwareVersion')}'
+        device['image' ]= f"WeOs{child.attrib.get('FirmwareVersion')}"
         self.device_list[child.attrib.get('Id')]['ip_address'] = addresses
         #self.device_list[child.attrib.get('Id')]['addresses']['Management'] = addresses
 
