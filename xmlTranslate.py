@@ -31,8 +31,8 @@ class xml_info:
         device['family'] = child.attrib.get('Family')
         device['model']= child.attrib.get('Model')
         device['image' ]= f'WeOs{child.attrib.get('FirmwareVersion')}'
-        self.device_list[child.attrib.get('Id')]['addresses'] = {}
-        self.device_list[child.attrib.get('Id')]['addresses']['Management'] = addresses
+        self.device_list[child.attrib.get('Id')]['ip_address'] = addresses
+        #self.device_list[child.attrib.get('Id')]['addresses']['Management'] = addresses
 
     def getVlans(self, child):
         self.device_list[child.attrib.get('Id')]['vlans'] = {}
@@ -51,16 +51,18 @@ class xml_info:
             if "PhysicalLayer" in child.attrib:
                 for ch in child.iter():
                     if ch.get('Name') is not None:
+                        
                         self.getPortInfo(child, ch, dev_id)
 
 
     def getPortInfo(self, child, ch, dev_id): #Everything with ports 
         if dev_id not in self.device_list:
             self.device_list[dev_id] = {'ports': {}}
-        if 'Ports' not in self.device_list[dev_id]:
+        if 'ports' not in self.device_list[dev_id]:
             self.device_list[dev_id]['ports'] = {}
         if ch.get('Name') not in self.device_list[dev_id]['ports']:
             self.device_list[dev_id]['ports'][ch.get('Name')] = {}
+            
 
         self.device_list[dev_id]['ports'][ch.get('Name')] = {}
         self.device_list[dev_id]['ports'][ch.get('Name')]['Up'] = child.attrib['Up']
@@ -97,8 +99,10 @@ if __name__ == "__main__":
     #print(xml.showDevices())
     print('-' * 15)
     #print(xml.showDevices())
+    #xml.createDeviceInfo()
     #print('Device: ', xml.showDevices('a80f1106-01c5-42ea-a254-47e9df0d05ec'))
     print('-' * 20)
     #print('Device: ', xml.showDevices('e92752be-9b3b-45f2-b09f-39cd65571f0f'))
     xml.prettyPrint()
+    #xml.prettyPrint('7443738c-e4dc-4567-a0be-71a258b53de4')
  
