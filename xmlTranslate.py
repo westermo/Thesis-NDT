@@ -18,8 +18,10 @@ class xml_info:
 
     def deviceList(self, child): 
         self.device_list[child.attrib.get('Id')] = device = {}
+        self.device_list[child.attrib.get('Id')]['id'] = child.attrib.get('Id') 
         addresses = ''
         device['position'] = {}
+        
         for hostInfo in child.iter():
             if 'Hostname' in hostInfo.tag:
                 self.device_list[child.attrib.get('Id')]['name'] = hostInfo.text
