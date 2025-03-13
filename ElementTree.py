@@ -82,9 +82,12 @@ class xml_info:
         if dict == None:
             data = self.device_list
             print(json.dumps(data, indent=4))
+            return data
         else:
             data = self.device_list[dict]
             print(json.dumps(data, indent = 4))
+            return data
+
 
 
 
