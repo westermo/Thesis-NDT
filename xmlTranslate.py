@@ -99,7 +99,6 @@ if __name__ == "__main__":
     #print(xml.showDevices())
     print('-' * 15)
     #print(xml.showDevices())
-    #xml.createDeviceInfo()
     #print('Device: ', xml.showDevices('a80f1106-01c5-42ea-a254-47e9df0d05ec'))
     print('-' * 20)
     #print('Device: ', xml.showDevices('e92752be-9b3b-45f2-b09f-39cd65571f0f'))
