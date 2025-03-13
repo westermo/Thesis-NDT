@@ -1,6 +1,12 @@
 from dataclasses import dataclass, field
 from typing import Dict, Tuple, Optional, Any
 
+# connection
+
+# topology
+
+# configuration
+
 @dataclass
 class Vlan:
     name: Optional[str] = None
