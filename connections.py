@@ -18,7 +18,6 @@ class connections:
                 if connId not in self.conn_dict:
                     self.conn_dict['connection'+str(connId)] = {}
                 self.conn_dict['connection'+str(connId)] = child.attrib
-                #print(connId, self.conn_dict)
 
                 for interface in child.iter():
                     if 'SourceDevicePort' in interface.tag:
