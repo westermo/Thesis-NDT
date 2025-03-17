@@ -24,12 +24,16 @@ class connections:
                     if 'SourceDevicePort' in interface.tag:
                         print(interface.tag, interface[0].attrib.get('Name'))
                         sourceDevice = interface[0].attrib.get('Name')
-                        if sourceDevice is not None and sourceDevice.startswith('ETH '):
-                            sourceDevice = sourceDevice.lower().replace(' ', '') 
-                            print('New: ', sourceDevice)
-                        if sourceDevice is not None and sourceDevice.startswith('DSL '):
-                            sourceDevice = sourceDevice.lower().replace(' ', '')
-                        self.conn_dict['connection'+str(connId)]['source_device_port'] = sourceDevice
+                        if sourceDevice is not None:
+                            if sourceDevice.startswith('ETH '):
+                                sourceDevice = sourceDevice.lower().replace(' ', '') 
+                                print('New: ', sourceDevice)
+                                print('test!', sourceDevice[3:])
+
+                            if sourceDevice.startswith('DSL '):
+                                sourceDevice = sourceDevice.lower().replace(' ', '')
+                            sourceDevice = sourceDevice[3:]
+                            self.conn_dict['connection'+str(connId)]['source_device_port'] = int(sourceDevice)
 
 
                     if 'TargetDevicePort' in interface.tag:
@@ -38,13 +42,16 @@ class connections:
                         #if targetDevice.startswith('ETH'): 
                             #targetDevice = targetDevice.lower().replace(' ', '')
                         print(targetDevice)
-                        if targetDevice is not None and targetDevice.startswith('ETH '):
-                            targetDevice = targetDevice.lower().replace(' ', '')
-                            print('New: ', targetDevice)
-                        if targetDevice is not None and targetDevice.startswith('DSL '):
-                            targetDevice = targetDevice.lower().replace(' ', '')
-                        self.conn_dict['connection'+str(connId)]['target_device_port'] = targetDevice
+                        if targetDevice is not None:
+                            if targetDevice.startswith('ETH '):
+                                targetDevice = targetDevice.lower().replace(' ', '')
+                                print('New: ', targetDevice)
+                            if targetDevice.startswith('DSL '):
+                                targetDevice = targetDevice.lower().replace(' ', '')
+                            targetDevice = targetDevice[3:]
+                            self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)
                 connId+=1
+        self.prettyPrint()
 
     def prettyPrint(self, dict = None): 
         if dict == None:
@@ -59,4 +66,4 @@ class connections:
 if __name__ == '__main__':
     conn = connections(r'sample_xml\Project-3.1.xml')
     conn.getConnections()
-    conn.prettyPrint()
+    #.prettyPrint()
