@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import json
+import re
 
 class xml_info:
     def __init__(self, file_path):
@@ -15,7 +16,7 @@ class xml_info:
                 self.deviceList(child)
                 self.getVlans(child)
         self.createDeviceInfo()
-        self.prettyPrint()
+        #self.prettyPrint()
 
     def deviceList(self, child): 
         self.device_list[child.attrib.get('Id')] = device = {}
@@ -66,13 +67,17 @@ class xml_info:
         if ch.get('Name') not in self.device_list[dev_id]['ports']:
             self.device_list[dev_id]['ports'][ch.get('Name')] = {}
             
-
         self.device_list[dev_id]['ports'][ch.get('Name')] = {}
-        self.device_list[dev_id]['ports'][ch.get('Name')]['Up'] = child.attrib['Up']
+        self.device_list[dev_id]['ports'][ch.get('Name')]['index'] = int(re.sub(r'[^0-9]', '', ch.get('Name').lower()))
         for mac in child.iter():
             typ = mac.get('Type')
             if typ is not None: 
-                self.device_list[dev_id]['ports'][ch.get('Name')][typ] = mac.text
+                self.device_list[dev_id]['ports'][ch.get('Name')]['mac_address'] = mac.text
+        
+        if child.attrib['Up'].lower() == 'true':
+            self.device_list[dev_id]['ports'][ch.get('Name')]['up'] = True
+        elif child.attrib['Up'].lower() == 'false':
+            self.device_list[dev_id]['ports'][ch.get('Name')]['up'] = False
         
     def showDeviceInfo(self):
         return self.device_info
