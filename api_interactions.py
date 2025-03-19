@@ -72,16 +72,20 @@ class GNS3ApiClient:
         """Delete a project by ID."""
         return self._request('delete', f'projects/{project_id}')
     
-    # def create_node(self, project_id: str, name: str, template_id: str, 
-    #                position: Tuple[float, float]) -> Dict[str, Any]:
-    #     """Create a new node in the project."""
-    #     data = {
-    #         "name": name,
-    #         "template_id": template_id,
-    #         "x": position[0],
-    #         "y": position[1]
-    #     }
-    #     return self._request('post', f'projects/{project_id}/nodes', data)
+    def create_node(self, project_id: str, name: str, template_id: str, 
+                   position: Tuple[float, float]) -> Dict[str, Any]:
+        """Create a new node in the project."""
+        data = {
+            "name": name,
+            "template_id": template_id,
+            "x": position[0],
+            "y": position[1]
+        }
+        return self._request('post', f'projects/{project_id}/nodes', data)
+    
+    def create_default_node(self, project_id: str, name: str, position: Tuple[float, float]) -> Dict[str, Any]:
+        """Create a new node using the default template."""
+        return self.create_node(project_id, name, '0da18376-a083-4284-9610-e1f3db7d9344', position)
     
     def get_nodes(self, project_id: str) -> List[Dict[str, Any]]:
         """Get all nodes in a project."""
