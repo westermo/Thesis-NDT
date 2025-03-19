@@ -15,6 +15,7 @@ class xml_info:
                 self.deviceList(child)
                 self.getVlans(child)
         self.createDeviceInfo()
+        self.prettyPrint()
 
     def deviceList(self, child): 
         self.device_list[child.attrib.get('Id')] = device = {}
@@ -104,7 +105,6 @@ if __name__ == "__main__":
     #print('Device: ', xml.showDevices('a80f1106-01c5-42ea-a254-47e9df0d05ec'))
     print('-' * 20)
     #print('Device: ', xml.showDevices('e92752be-9b3b-45f2-b09f-39cd65571f0f'))
-    xml.prettyPrint()
     #xml.prettyPrint('7443738c-e4dc-4567-a0be-71a258b53de4')
     #
  

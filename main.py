@@ -1,6 +1,7 @@
 from dataclasses import fields
 from typing import Dict, Any, Type, Set
 from data_model import Device, Port
+from xmlTranslate import xml_info as xml_info
 
 def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
     """
@@ -106,6 +107,8 @@ devices_dict: Dict[str, Dict[str, Any]] = {
 
 # list to store devices
 device_list: list[Device] = []
+xml = xml_info(r'sample_xml\Project-3.1.xml')
+xml.findDevices()
 
 # Iterate through the Example dictionary and create Device objects
 for device_id, device_data in devices_dict.items():
