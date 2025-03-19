@@ -148,7 +148,7 @@ for device in device_list:
     
     print("Ports:")
     for port_id, port in device.ports.items():
-        #print(f"  Port: {port.index}")
+        #print(f"  Port: {port}")
         for port_attr, port_value in port.__dict__.items():
             print(f"    {port_attr}: {port_value}")
     

@@ -65,19 +65,28 @@ class xml_info:
         if 'ports' not in self.device_list[dev_id]:
             self.device_list[dev_id]['ports'] = {}
         if ch.get('Name') not in self.device_list[dev_id]['ports']:
-            self.device_list[dev_id]['ports'][ch.get('Name')] = {}
-            
-        self.device_list[dev_id]['ports'][ch.get('Name')] = {}
-        self.device_list[dev_id]['ports'][ch.get('Name')]['index'] = int(re.sub(r'[^0-9]', '', ch.get('Name').lower()))
-        for mac in child.iter():
-            typ = mac.get('Type')
-            if typ is not None: 
-                self.device_list[dev_id]['ports'][ch.get('Name')]['mac_address'] = mac.text
-        
-        if child.attrib['Up'].lower() == 'true':
-            self.device_list[dev_id]['ports'][ch.get('Name')]['up'] = True
-        elif child.attrib['Up'].lower() == 'false':
-            self.device_list[dev_id]['ports'][ch.get('Name')]['up'] = False
+            if 'eth' in ch.get('Name').lower():
+                self.device_list[dev_id]['ports'][ch.get('Name')] = {}
+
+                self.device_list[dev_id]['ports'][ch.get('Name')] = {}
+                self.device_list[dev_id]['ports'][ch.get('Name')]['index'] = int(re.sub(r'[^0-9]', '', ch.get('Name').lower()))
+                for mac in child.iter():
+                    typ = mac.get('Type')
+                    if typ is not None: 
+                        self.device_list[dev_id]['ports'][ch.get('Name')]['mac_address'] = mac.text
+                
+                if child.attrib['Up'].lower() == 'true':
+                    self.device_list[dev_id]['ports'][ch.get('Name')]['up'] = True
+                elif child.attrib['Up'].lower() == 'false':
+                    self.device_list[dev_id]['ports'][ch.get('Name')]['up'] = False
+
+        # # pop any dict that has "dsl" as the key
+        # for key, value in self.device_list.items():
+        #     for k, v in value.items():
+        #         if 'dsl' in k.lower():
+        #             #self.device_list[key].pop(k)
+
+
         
     def showDeviceInfo(self):
         return self.device_info
