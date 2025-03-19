@@ -11,44 +11,43 @@ class connections:
     def getConnections(self):
         connId = 0 
         for child in self.root.iter():
-            #print(child.tag)
             if 'AggregatePortConnection' in child.tag:
-                #print(child.attrib)
-
-                if connId not in self.conn_dict:
+                #Input dict of DeviceId's in connection dictionary
+                if connId not in self.conn_dict: 
                     self.conn_dict['connection'+str(connId)] = {}
                 self.conn_dict['connection'+str(connId)] = child.attrib
 
                 for interface in child.iter():
+                    #Add source device port to the correct connection
                     if 'SourceDevicePort' in interface.tag:
-                        print(interface.tag, interface[0].attrib.get('Name'))
                         sourceDevice = interface[0].attrib.get('Name')
                         if sourceDevice is not None:
                             if sourceDevice.startswith('ETH '):
-                                sourceDevice = sourceDevice.lower().replace(' ', '') 
-                                print('New: ', sourceDevice)
-                                print('test!', sourceDevice[3:])
-
-                            if sourceDevice.startswith('DSL '):
                                 sourceDevice = sourceDevice.lower().replace(' ', '')
-                            sourceDevice = sourceDevice[3:]
-                            self.conn_dict['connection'+str(connId)]['source_device_port'] = int(sourceDevice)
+                                sourceDevice = sourceDevice[3:]
+                                self.conn_dict['connection'+str(connId)]['source_device_port'] = int(sourceDevice)
 
+                            if sourceDevice.lower().startswith('dsl'):
+                                self.conn_dict.pop('connection'+str(connId)) #Remove DSL connection from dsl
+                                print(f'Connection {connId} removed: DSL link')
+                            if sourceDevice.startswith('eth'):
+                                sourceDevice = sourceDevice[3:]
+                                self.conn_dict['connection'+str(connId)]['source_device_port'] = int(sourceDevice)
 
+                    #Add target device port to the correct connection
                     if 'TargetDevicePort' in interface.tag:
-                        print(interface.tag, interface[0].attrib.get('Name'))
                         targetDevice = interface[0].attrib.get('Name')
-                        #if targetDevice.startswith('ETH'): 
-                            #targetDevice = targetDevice.lower().replace(' ', '')
-                        print(targetDevice)
                         if targetDevice is not None:
                             if targetDevice.startswith('ETH '):
                                 targetDevice = targetDevice.lower().replace(' ', '')
-                                print('New: ', targetDevice)
+                                targetDevice = targetDevice[3:]
+                                self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)
                             if targetDevice.startswith('DSL '):
-                                targetDevice = targetDevice.lower().replace(' ', '')
-                            targetDevice = targetDevice[3:]
-                            self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)
+                                pass 
+
+                            if targetDevice.startswith('eth'):
+                                targetDevice = targetDevice[3:]
+                                self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)                            
                 connId+=1
         self.prettyPrint()
 
