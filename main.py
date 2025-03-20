@@ -97,6 +97,10 @@ print("-" * 50)
 
 # Create or get project and build devices
 topology_builder = TopologyBuilder()
+
+# List available templates to help with configuration
+#topology_builder.list_available_templates()
+
 try:
     node_mapping = topology_builder.build_topology(device_list)
     

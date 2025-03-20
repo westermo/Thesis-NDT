@@ -10,10 +10,19 @@ gns3_server:
 project:
   name: "auto_1"
   position_scale:
-    x: 2
-    y: 2
+    x: 1.2
+    y: 1.2
   
 # Template settings
 template:
-  # The ID of the appliance template to use for all devices
+  # Default template as fallback
   default_appliance_id: "0da18376-a083-4284-9610-e1f3db7d9344"
+  # Family-specific templates
+  device_templates:
+    #RedFox: "template-id-for-redfox"  
+    #Lynx: "template-id-for-lynx"
+    #Wolverine: "template-id-for-wolverine"
+    #Falcon: "template-id-for-falcon"
+  # Optional: More specific model templates
+  model_templates:
+    #"RedFox-5528-E-F4G-T24G-LV": "template-id-for-specific-model"

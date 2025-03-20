@@ -21,6 +21,26 @@ class TopologyBuilder:
         except Exception as e:
             self.logger.error(f"Failed to load configuration: {str(e)}")
             raise ValueError(f"Failed to load configuration: {str(e)}")
+        
+    def _get_template_for_device(self, device: Device) -> str:
+        """Get the appropriate template ID for a device."""
+        # Default template
+        default_template = self.config['template']['default_appliance_id']
+        
+        # Check for model-specific template (highest priority)
+        model_templates = self.config['template'].get('model_templates', {})
+        if model_templates:
+            if device.model in model_templates:
+                return model_templates[device.model]
+        
+        # Check for family-specific template
+        family_templates = self.config['template'].get('device_templates', {})
+        if family_templates:
+            if device.family in family_templates:
+                return family_templates[device.family]
+        
+        # Return default if no match found
+        return default_template
     
     def create_or_get_project(self) -> str:
         """Create a new project or get an existing one."""
@@ -40,10 +60,7 @@ class TopologyBuilder:
     
     def build_devices(self, device_list: List[Device], project_id: str) -> Dict[str, str]:
         """Create nodes in GNS3 based on device list."""
-        default_template_id = self.config['template']['default_appliance_id']
-        
-        # Get scaling factors from config with defaults
-        # get(primary, secondary) -> primary or secondary if primary is None
+        # Get position scaling factors
         position_scale = self.config['project'].get('position_scale', {})
         scale_x = position_scale.get('x', 1)
         scale_y = position_scale.get('y', 1)
@@ -52,6 +69,9 @@ class TopologyBuilder:
         
         for device in device_list:
             try:
+                # Get appropriate template for this device
+                template_id = self._get_template_for_device(device)
+                
                 # Use device position or default to (0,0)
                 position = device.position if device.position else (0, 0)
                 # Scale position using separate factors for x and y
@@ -61,13 +81,13 @@ class TopologyBuilder:
                 node = self.api_client.create_node(
                     project_id=project_id,
                     name=device.name or f"{device.family}-{device.model}",
-                    template_id=default_template_id,
+                    template_id=template_id,
                     position=position
                 )
                 
                 # Store mapping
                 node_mapping[device.id] = node['node_id']
-                self.logger.info(f"Created node for device: {device.name}")
+                self.logger.info(f"Created node for device: {device.name} (using template: {template_id})")
             except GNS3ApiError as e:
                 self.logger.error(f"Failed to create node for device {device.name}: {str(e)}")
         
@@ -86,3 +106,14 @@ class TopologyBuilder:
         except Exception as e:
             self.logger.error(f"Error building topology: {str(e)}")
             raise
+
+    def list_available_templates(self):
+        """Print all available templates in GNS3."""
+        templates = self.api_client.get_templates()
+        print("\nAvailable GNS3 Templates:")
+        print("-" * 50)
+        for template in templates:
+            print(f"Name: {template.get('name')}")
+            print(f"ID: {template.get('template_id')}")
+            print(f"Type: {template.get('template_type', 'unknown')}")
+            print("-" * 50)
