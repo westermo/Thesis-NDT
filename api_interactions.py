@@ -76,12 +76,10 @@ class GNS3ApiClient:
                    position: Tuple[float, float]) -> Dict[str, Any]:
         """Create a new node in the project."""
         data = {
-            "name": name,
-            "template_id": template_id,
             "x": position[0],
             "y": position[1]
         }
-        return self._request('post', f'projects/{project_id}/nodes', data)
+        return self._request('post', f'projects/{project_id}/templates/{template_id}', data)
     
     def create_default_node(self, project_id: str, name: str, position: Tuple[float, float]) -> Dict[str, Any]:
         """Create a new node using the default template."""

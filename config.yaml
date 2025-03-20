@@ -1,6 +1,6 @@
 # GNS3 Server Configuration
 gns3_server:
-  host: "10.2.100.222"
+  host: "10.2.100.214"
   port: 3080
   protocol: "http"
   # username: ""
@@ -9,8 +9,11 @@ gns3_server:
 # Project settings
 project:
   name: "auto_1"
+  position_scale:
+    x: 2
+    y: 2
   
 # Template settings
 template:
   # The ID of the appliance template to use for all devices
-  default_appliance_id: "0da18376-a083-4284-9610-e1f3db7d9344s"
+  default_appliance_id: "0da18376-a083-4284-9610-e1f3db7d9344"

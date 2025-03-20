@@ -1,3 +1,4 @@
+import json
 from dataclasses import fields
 from typing import Dict, Any, Type, Set
 from data_model import Device, Port, Vlan
@@ -90,3 +91,20 @@ print("Testing connection to GNS3 server...")
 api_client = GNS3ApiClient()
 projects = api_client.get_projects()
 print(f"Connection successful! Found {len(projects)} projects.")
+
+print("\nBuilding network topology in GNS3...")
+print("-" * 50)
+
+# Create or get project and build devices
+topology_builder = TopologyBuilder()
+try:
+    node_mapping = topology_builder.build_topology(device_list)
+    
+    print(f"Successfully created topology with {len(node_mapping)} devices")
+    
+    # Save node mapping for link creation (secondary goal)
+    with open("node_mapping.json", "w") as f:
+        json.dump(node_mapping, f, indent=2)
+        
+except Exception as e:
+    print(f"Error building topology: {str(e)}")

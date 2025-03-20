@@ -40,17 +40,28 @@ class TopologyBuilder:
     
     def build_devices(self, device_list: List[Device], project_id: str) -> Dict[str, str]:
         """Create nodes in GNS3 based on device list."""
-        template_id = self.config['template']['default_appliance_id']
+        default_template_id = self.config['template']['default_appliance_id']
+        
+        # Get scaling factors from config with defaults
+        # get(primary, secondary) -> primary or secondary if primary is None
+        position_scale = self.config['project'].get('position_scale', {})
+        scale_x = position_scale.get('x', 1)
+        scale_y = position_scale.get('y', 1)
+        
         node_mapping = {}  # Map device IDs to GNS3 node IDs
         
         for device in device_list:
             try:
-                # Create node in GNS3
+                # Use device position or default to (0,0)
                 position = device.position if device.position else (0, 0)
+                # Scale position using separate factors for x and y
+                position = (int(position[0] * scale_x), int(position[1] * scale_y))
+                
+                # Create node in GNS3
                 node = self.api_client.create_node(
                     project_id=project_id,
-                    name=device.name,
-                    template_id=template_id,
+                    name=device.name or f"{device.family}-{device.model}",
+                    template_id=default_template_id,
                     position=position
                 )
                 
