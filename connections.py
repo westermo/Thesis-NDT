@@ -29,7 +29,7 @@ class connections:
 
                             if sourceDevice.lower().startswith('dsl'):
                                 self.conn_dict.pop('connection'+str(connId)) #Remove DSL connection from dsl
-                                print(f'Connection {connId} removed: DSL link')
+                                #print(f'Connection {connId} removed: DSL link')
                             if sourceDevice.startswith('eth'):
                                 sourceDevice = sourceDevice[3:]
                                 self.conn_dict['connection'+str(connId)]['source_device_port'] = int(sourceDevice)
@@ -49,7 +49,7 @@ class connections:
                                 targetDevice = targetDevice[3:]
                                 self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)                            
                 connId+=1
-        self.prettyPrint()
+        #self.prettyPrint()
 
     def prettyPrint(self, dict = None): 
         if dict == None:

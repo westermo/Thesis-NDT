@@ -112,3 +112,29 @@ try:
         
 except Exception as e:
     print(f"Error building topology: {str(e)}")
+
+print("\nBuilding links between devices...")
+print("-" * 50)
+
+from connections import connections
+from link_builder import LinkBuilder
+
+# Parse connections from XML
+conn = connections(r'sample_xml\Project-3.1.xml')
+conn.getConnections()
+connection_data = conn.conn_dict
+
+# Create link builder
+link_builder = LinkBuilder(api_client=topology_builder.api_client)
+
+try:
+    # Get project ID (reuse the same project)
+    project_id = topology_builder.create_or_get_project()
+    
+    # Build links
+    links = link_builder.build_links(project_id, connection_data, node_mapping)
+    
+    print(f"Successfully created {len(links)} links")
+    
+except Exception as e:
+    print(f"Error building links: {str(e)}")

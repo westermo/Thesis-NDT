@@ -100,3 +100,22 @@ class GNS3ApiClient:
     def get_templates(self) -> List[Dict[str, Any]]:
         """Get all available templates/appliances."""
         return self._request('get', 'templates')
+    
+    def create_link(self, project_id: str, source_node_id: str, source_port: int, 
+                    target_node_id: str, target_port: int) -> Dict[str, Any]:
+        """Create a link between two nodes in a project."""
+        data = {
+            'nodes': [
+                {
+                    'node_id': source_node_id,
+                    'adapter_number': source_port - 1, # Adjust for 0-based indexing
+                    'port_number': 0  
+                },
+                {
+                    'node_id': target_node_id,
+                    'adapter_number': source_port - 1, # Adjust for 0-based indexing
+                    'port_number': 0  
+                }
+            ]
+        }
+        return self._request('post', f'projects/{project_id}/links', data)
