@@ -18,6 +18,9 @@ def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_
     
     return True
 
+
+
+
 # list to store devices
 device_list: list[Device] = []
 xml = xml_info(r'sample_xml\Project-3.1.xml')
@@ -91,6 +94,12 @@ print("Testing connection to GNS3 server...")
 api_client = GNS3ApiClient()
 projects = api_client.get_projects()
 print(f"Connection successful! Found {len(projects)} projects.")
+
+for dict in projects:
+    if dict["name"] == "auto_1":
+        id = dict["project_id"]
+        api_client.delete_project(id)
+        print("Deleted project auto_1")
 
 print("\nBuilding network topology in GNS3...")
 print("-" * 50)

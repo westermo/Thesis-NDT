@@ -10,8 +10,8 @@ gns3_server:
 project:
   name: "auto_1"
   position_scale:
-    x: 1.2
-    y: 1.2
+    x: 2
+    y: 2
   
 # Template settings
 template:
