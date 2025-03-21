@@ -108,13 +108,13 @@ class GNS3ApiClient:
             'nodes': [
                 {
                     'node_id': source_node_id,
-                    'adapter_number': source_port - 1, # Adjust for 0-based indexing
-                    'port_number': 0  
+                    'adapter_number': source_port, # Adjust for 0-based indexing
+                    'port_number': 0
                 },
                 {
                     'node_id': target_node_id,
-                    'adapter_number': source_port - 1, # Adjust for 0-based indexing
-                    'port_number': 0  
+                    'adapter_number': target_port, # Adjust for 0-based indexing
+                    'port_number': 0
                 }
             ]
         }

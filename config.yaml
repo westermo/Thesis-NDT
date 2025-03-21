@@ -1,6 +1,6 @@
 # GNS3 Server Configuration
 gns3_server:
-  host: "10.2.100.214"
+  host: "10.2.100.215"
   port: 3080
   protocol: "http"
   # username: ""
