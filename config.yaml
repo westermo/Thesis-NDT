@@ -19,8 +19,8 @@ template:
   default_appliance_id: "0da18376-a083-4284-9610-e1f3db7d9344"
   # Family-specific templates
   device_templates:
-    #RedFox: "template-id-for-redfox"  
-    #Lynx: "template-id-for-lynx"
+    RedFox: "571dd592-af0a-42a5-a0a2-37874179b962"  
+    Lynx: "ec72173d-070f-42b6-b772-251204399f58"
     #Wolverine: "template-id-for-wolverine"
     #Falcon: "template-id-for-falcon"
   # Optional: More specific model templates
