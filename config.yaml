@@ -13,16 +13,15 @@ project:
     x: 2
     y: 2
   
-# Template settings
 template:
   # Default template as fallback
   default_appliance_id: "0da18376-a083-4284-9610-e1f3db7d9344"
   # Family-specific templates
   device_templates:
-    RedFox: "571dd592-af0a-42a5-a0a2-37874179b962"  
-    Lynx: "ec72173d-070f-42b6-b772-251204399f58"
-    #Wolverine: "template-id-for-wolverine"
-    #Falcon: "template-id-for-falcon"
-  # Optional: More specific model templates
+    RedFox: "571dd592-af0a-42a5-a0a2-37874179b962" #RED
+    Lynx: "ec72173d-070f-42b6-b772-251204399f58" #BLUE
+    #Viper: "template-id-for-wolverine" #GREEN
+  # Specific model templates
   model_templates:
     #"RedFox-5528-E-F4G-T24G-LV": "template-id-for-specific-model"
+    Lynx-5528-E-F4G-T24G-LV": "af07f21c-c12f-4736-b425-55e24d49023f"
