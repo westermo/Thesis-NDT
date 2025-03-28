@@ -23,7 +23,7 @@ def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_
 
 # list to store devices
 device_list: list[Device] = []
-xml = xml_info(r'sample_xml\Project-3.1.xml')
+xml = xml_info(r'sample_xml\Project.xml')
 xml.findDevices()
 
 devices_dict = xml.device_list
@@ -129,7 +129,7 @@ from connections import connections
 from link_builder import LinkBuilder
 
 # Parse connections from XML
-conn = connections(r'sample_xml\Project-3.1.xml')
+conn = connections(r'sample_xml\Project.xml')
 conn.getConnections()
 connection_data = conn.conn_dict
 
