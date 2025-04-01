@@ -28,7 +28,9 @@ class xml_info:
             if 'Hostname' in hostInfo.tag:
                 self.device_list[child.attrib.get('Id')]['name'] = hostInfo.text
             if 'Position' in hostInfo.tag:
-                pos =  round(float(hostInfo.attrib['X']), 2), round(float(hostInfo.attrib['Y']), 2)
+                x_str = hostInfo.attrib['X'].replace(',', '.')
+                y_str = hostInfo.attrib['Y'].replace(',', '.')
+                pos = round(float(x_str), 2), round(float(y_str), 2)
                 self.device_list[child.attrib.get('Id')]['position'] = tuple(pos)
             if 'ManagementIpAddress' in hostInfo.tag:
                 addresses = hostInfo.text
