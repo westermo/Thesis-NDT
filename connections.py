@@ -52,7 +52,8 @@ class connections:
 
                                   
                 connId+=1
-            if 'WeConfigConnection' in child.tag:
+            
+            if 'WeConfigConnection' in child.tag: #WeConfig connection is the computer running WeConfig, this will be the cloud node
                 test = child.attrib
                 print('!!!!!', test, child[0].attrib)
                 self.conn_dict['cloud'] = {}
