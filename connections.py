@@ -47,9 +47,22 @@ class connections:
 
                             if targetDevice.startswith('eth'):
                                 targetDevice = targetDevice[3:]
-                                self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)                            
+                                self.conn_dict['connection'+str(connId)]['target_device_port'] = int(targetDevice)
+
+
+                                  
                 connId+=1
+            if 'WeConfigConnection' in child.tag:
+                test = child.attrib
+                print('!!!!!', test, child[0].attrib)
+                self.conn_dict['cloud'] = {}
+                self.conn_dict['cloud']['SourceDeviceId'] = 'cloud'
+                self.conn_dict['cloud']['TargetDeviceId'] = child.attrib['DeviceId']
+                self.conn_dict['cloud']['source_device_port'] = ''
+                self.conn_dict['cloud']['targer_device_port'] = child[0].attrib['Name']
+
         #self.prettyPrint()
+
 
     def prettyPrint(self, dict = None): 
         if dict == None:
@@ -64,4 +77,4 @@ class connections:
 if __name__ == '__main__':
     conn = connections(r'sample_xml\Project-3.1.xml')
     conn.getConnections()
-    #.prettyPrint()
+    conn.prettyPrint()
