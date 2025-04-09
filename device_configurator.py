@@ -10,12 +10,11 @@
 # #post med backup action (se webinterface)
 
 from pathlib import Path
-import paramiko
 
 def device_iter(directory):
     dir_path = Path(directory)
     for file in dir_path.iterdir():
-        if file.is_file():
+        if file.is_dir():
             print(file.name)
 
 

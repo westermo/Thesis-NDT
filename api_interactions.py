@@ -119,3 +119,9 @@ class GNS3ApiClient:
             ]
         }
         return self._request('post', f'projects/{project_id}/links', data)
+    
+ 
+    def update_node(self, project_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+         """Update node"""
+         return self._request('post', f'projects/{project_id}/links', data)
+    
