@@ -20,6 +20,7 @@ template:
   device_templates:
     RedFox: "571dd592-af0a-42a5-a0a2-37874179b962" #RED
     Lynx: "ec72173d-070f-42b6-b772-251204399f58" #BLUE
+    #cloud: "39e257dc-8412-3174-b6b3-0ee3ed6a43e9"
     #Viper: "template-id-for-wolverine" #GREEN
   # Specific model templates
   model_templates:
