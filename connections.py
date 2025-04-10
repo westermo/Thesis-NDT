@@ -62,7 +62,7 @@ class connections:
                 self.conn_dict['cloud']['source_device_port'] = ''
                 cloud_port= child[0].attrib['Name']
                 if cloud_port.lower().startswith('eth'):
-                    self.conn_dict['cloud']['targer_device_port'] = int(child[0].attrib['Name'][3:])
+                    self.conn_dict['cloud']['target_device_port'] = int(child[0].attrib['Name'][3:])
 
         #self.prettyPrint()
 
