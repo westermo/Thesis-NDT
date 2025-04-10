@@ -78,4 +78,4 @@ class connections:
 if __name__ == '__main__':
     conn = connections(r'sample_xml\Project-3.1.xml')
     conn.getConnections()
-    conn.prettyPrint()
+    #conn.prettyPrint()
