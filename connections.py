@@ -60,7 +60,9 @@ class connections:
                 self.conn_dict['cloud']['SourceDeviceId'] = 'cloud'
                 self.conn_dict['cloud']['TargetDeviceId'] = child.attrib['DeviceId']
                 self.conn_dict['cloud']['source_device_port'] = ''
-                self.conn_dict['cloud']['targer_device_port'] = child[0].attrib['Name']
+                cloud_port= child[0].attrib['Name']
+                if cloud_port.lower().startswith('eth'):
+                    self.conn_dict['cloud']['targer_device_port'] = int(child[0].attrib['Name'][3:])
 
         #self.prettyPrint()
 
@@ -78,4 +80,4 @@ class connections:
 if __name__ == '__main__':
     conn = connections(r'sample_xml\Project-3.1.xml')
     conn.getConnections()
-    #conn.prettyPrint()
+    conn.prettyPrint()
