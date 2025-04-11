@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Dict, Tuple, Optional, Any
 
-# connection
+#TODO connection
 
-# topology
+#TODO topology
 
-# configuration
+#TODO configuration
 
 @dataclass
 class Vlan:

@@ -73,7 +73,7 @@ class TopologyBuilder:
                 template_id = self._get_template_for_device(device)
                 
                 # Use device position or default to (0,0)
-                position = device.position if device.position else (0, 0)
+                position = device.position if device.position else (0, 0) #TODO add random position generator if no position is given
                 # Scale position using separate factors for x and y
                 position = (int(position[0] * scale_x), int(position[1] * scale_y))
                 

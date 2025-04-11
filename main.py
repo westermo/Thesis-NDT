@@ -19,11 +19,39 @@ def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_
     return True
 
 
+#TODO set the correct base mac address in gns3 so that it matches the one in the xml file
+
+# 1) 
+#TODO script should be run from command line with arguments that specify the physical topology folder and network to scan
+# 1) load from project foler or 2) load from network scan
+#TODO check if folder is empty, if it is do the scan
+#TODO check if physical topology folder already exists, if so, delete it
+
+#TODO create folder for physical topology
+#TODO perform scan of network using weconfig cli tool
+#TODO perform backup of all devices in network using weconfig cli tool
+#TODO unzip project into physical topology folder
+#TODO create project in GNS3 using GNS3 API
+#TODO create devices in GNS3 using GNS3 API
+#TODO create links between devices in GNS3 using GNS3 API
+#TODO apply configuration to devices in GNS3 using GNS3 API
+#TODO start devices in GNS3 using GNS3 API
+
+#TODO wait for user input
+#TODO check if virtual topology folder already exists, if so, delete it
+#TODO create folder for virtual topology
+#TODO scan network using weconfig cli tool (this will always use the 169.254.1.1/16 network)
+# 
+#TODO backup all devices in network using weconfig cli tool
+#TODO unzip project into project 2 folder
+#TODO check if the configuration files are the same as the ones in project 1
+#TODO apply configuration to devices in physical topology if the configuration changed
+# dont check if it changed, just apply it
 
 
 # list to store devices
 device_list: list[Device] = []
-xml = xml_info(r'sample_xml\Project.xml')
+xml = xml_info(r'sample_xml\Project-3.1.xml')
 xml.findDevices()
 
 devices_dict = xml.device_list
@@ -129,7 +157,7 @@ from connections import connections
 from link_builder import LinkBuilder
 
 # Parse connections from XML
-conn = connections(r'sample_xml\Project.xml')
+conn = connections(r'sample_xml\Project-3.1.xml')
 conn.getConnections()
 connection_data = conn.conn_dict
 
@@ -147,3 +175,6 @@ try:
     
 except Exception as e:
     print(f"Error building links: {str(e)}")
+
+
+#TODO 
