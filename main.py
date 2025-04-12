@@ -18,6 +18,7 @@ def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_
     
     return True
 
+from device_configurator import DeviceConfigurator
 
 #TODO set the correct base mac address in gns3 so that it matches the one in the xml file
 
@@ -177,4 +178,48 @@ except Exception as e:
     print(f"Error building links: {str(e)}")
 
 
-#TODO 
+print("\nSetting up cloud appliance and configuring devices...")
+print("-" * 50)
+
+try:
+    # Create device configurator
+    configurator = DeviceConfigurator(
+        topology_path="topologies/test2",  # You might want to make this configurable
+        node_mapping=node_mapping,
+        api_client=api_client
+    )
+    
+    # Set MAC addresses
+    print("Setting MAC addresses for nodes...")
+    mac_results = configurator.set_mac_addresses(project_id)
+    print(f"Set {sum(mac_results.values())} MAC addresses successfully")
+    
+    # Create cloud appliance
+    print("Creating cloud appliance...")
+    cloud_node_id = configurator.setup_cloud_appliance(project_id, position=(0, 0))
+    
+    if cloud_node_id:
+        print(f"Created cloud appliance with ID: {cloud_node_id}")
+        
+        # Connect cloud to a node
+        if node_mapping:
+            # Pick the first node
+            first_node_id = list(node_mapping.values())[0]
+            link = api_client.create_link(
+                project_id, 
+                cloud_node_id, 
+                1,  # virbr0 is usually port 1
+                first_node_id, 
+                0   # First port on the device
+            )
+            print(f"Connected cloud to node {first_node_id}")
+        
+        # Apply configurations
+        print("Applying device configurations...")
+        config_results = configurator.apply_all_configurations()
+        print(f"Applied {sum(config_results.values())} configurations successfully")
+    else:
+        print("Failed to create cloud appliance")
+    
+except Exception as e:
+    print(f"Error in configuration process: {str(e)}") 
