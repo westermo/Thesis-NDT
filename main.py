@@ -4,6 +4,20 @@ from typing import Dict, Any, Type, Set
 from data_model import Device, Port, Vlan
 from xmlTranslate import xml_info as xml_info
 
+from api_interactions import GNS3ApiClient
+from topology_builder import TopologyBuilder
+
+from connections import connections
+from link_builder import LinkBuilder
+
+import subprocess
+import os
+import zipfile
+import argparse
+import platform
+import datetime
+import random
+
 def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
     """
     Validate that dictionary keys match dataclass fields (excluding specified fields).
@@ -18,11 +32,49 @@ def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_
     
     return True
 
+def run_scan(path, adapterNameorId = "Wi-Fi"):
+    if os.name == 'posix':
+        subprocess.run(["../Publish/WeConfig", "dicover", "--adapterNameOrId",\
+                         adapterNameorId, "--useMdns", "--useIpConfig", "-p", path])
+    elif os.name == 'nt':
+        subprocess.run(['..\Publish\WeConfig.exe', "discover", "--adapterNameOrId",\
+                         adapterNameorId, "--useMdns", "--useIpConfig", "-p", path])
+        #Command to run weconfig in windows! 
 
+def run_backup(path, ip):
+    if os.name == 'posix':
+        subprocess.run(["../Publish/WeConfig", "backup", "-s", ip, "-p", path])
+    elif os.name == 'nt':
+        subprocess.run(['../Publish/WeConfig.exe', "backup", "-s", ip, "-p", path])
+        #Command to run weconfig in windows!
+
+def extract_zip(zip_path, extract_to=None):
+
+    # If no extraction path is provided, extract to the same directory as the ZIP file
+    if extract_to is None:
+        extract_to = os.path.dirname(os.path.abspath(zip_path))
+
+    # Extract the files
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+        
+    print(f"Extracted ZIP archive to {extract_to}")
+    
+def create_unique_folder(base_path: str, prefix: str) -> str:
+    """
+    Creates a unique timestamped folder and returns its path.
+    """
+    # Generate unique folder name with timestamp
+    timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M")
+    folder_name = f"{prefix}_{timestamp}"
+    folder_path = os.path.join(base_path, folder_name)
+    
+    # Create the folder
+    os.makedirs(folder_path, exist_ok=True)
+    print(f"Folder ready: {folder_path}")
+    
+    return folder_path
 #TODO set the correct base mac address in gns3 so that it matches the one in the xml file
-
-# 1) 
-#TODO script should be run from command line with arguments that specify the physical topology folder and network to scan
 # 1) load from project foler or 2) load from network scan
 #TODO check if folder is empty, if it is do the scan
 #TODO check if physical topology folder already exists, if so, delete it
@@ -48,10 +100,23 @@ def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_
 #TODO apply configuration to devices in physical topology if the configuration changed
 # dont check if it changed, just apply it
 
+print("Testing weconfig CLI tool...")
+print("-" * 50)
+
+project = "test.nrpj"
+
+run_scan(project, "Wi-Fi")
+
+# Example usage
+unique_folder = create_unique_folder("./topologies", "project")
+extract_zip(project, f"{unique_folder}")
+print(f"Extracted project to {unique_folder}")
 
 # list to store devices
 device_list: list[Device] = []
-xml = xml_info(r'sample_xml\Project-3.1.xml')
+
+#path = f"{unique_folder}\Project.xml"
+xml = xml_info(f"{unique_folder}\Project.xml")
 xml.findDevices()
 
 devices_dict = xml.device_list
@@ -104,19 +169,13 @@ for device in device_list:
         for vlan_attr, vlan_value in vlan.__dict__.items():
             print(f"    {vlan_attr}: {vlan_value}")
 
-    print("Ports:")
-    for port_id, port in device.ports.items():
-        #print(f"  Port: {port}")
-        for port_attr, port_value in port.__dict__.items():
-            print(f"    {port_attr}: {port_value}")
     
     print("-" * 50)
 
+input("Press Enter to continue...")
+
 print("\nTesting GNS3 API and Topology Builder")
 print("-" * 50)
-
-from api_interactions import GNS3ApiClient
-from topology_builder import TopologyBuilder
 
 print("Testing connection to GNS3 server...")
 api_client = GNS3ApiClient()
@@ -152,9 +211,6 @@ except Exception as e:
 
 print("\nBuilding links between devices...")
 print("-" * 50)
-
-from connections import connections
-from link_builder import LinkBuilder
 
 # Parse connections from XML
 conn = connections(r'sample_xml\Project-3.1.xml')
