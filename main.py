@@ -105,7 +105,7 @@ print("-" * 50)
 
 project = "test.nrpj"
 
-run_scan(project, "Wi-Fi")
+run_scan(project, "Ethernet 2")
 
 # Example usage
 unique_folder = create_unique_folder("./topologies", "project")
@@ -120,6 +120,12 @@ xml = xml_info(f"{unique_folder}\Project.xml")
 xml.findDevices()
 
 devices_dict = xml.device_list
+#devices_dict = {}
+
+#append cloud device to the devices_dict
+devices_dict["cloud"] = {"name": "cloud", "id": "cloud", "family": "cloud", "ports": {"virbr0": {}}}
+
+print(devices_dict)
 
 # Iterate through the dictionary and create Device objects
 for device_id, device_data in devices_dict.items():
@@ -129,21 +135,25 @@ for device_id, device_data in devices_dict.items():
     vlans_data = device_data.pop("vlans", {})
     
     try:
+
         # validate dictionary keys
-        validate_dict_keys(device_data, Device, ["ports", "vlans"])
+        if device_id != "cloud":
+            validate_dict_keys(device_data, Device, ["ports", "vlans"])
         device = Device(**device_data)
-        
+
         # Process ports
         for port_id, port_data in ports_data.items():
             # validate dictionary keys
-            validate_dict_keys(port_data, Port)
+            if device_id != "cloud":
+                validate_dict_keys(port_data, Port)
             port = Port(**port_data)
             device.ports[port_id] = port
 
         # Process vlans
         for vlan_id, vlan_data in vlans_data.items():
             # validate dictionary keys
-            validate_dict_keys(vlan_data, Vlan)
+            if device_id != "cloud":
+                validate_dict_keys(vlan_data, Vlan)
             vlan = Vlan(**vlan_data)
             device.vlans[vlan_id] = vlan
         
@@ -213,7 +223,7 @@ print("\nBuilding links between devices...")
 print("-" * 50)
 
 # Parse connections from XML
-conn = connections(r'sample_xml\Project-3.1.xml')
+conn = connections(f"{unique_folder}\Project.xml")
 conn.getConnections()
 connection_data = conn.conn_dict
 

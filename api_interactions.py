@@ -77,7 +77,19 @@ class GNS3ApiClient:
         """Create a new node in the project."""
         data = {
             "x": position[0],
-            "y": position[1]
+            "y": position[1],
+            "name": name
+        }
+        return self._request('post', f'projects/{project_id}/templates/{template_id}', data)
+    
+    def create_cloud(self, project_id: str, name: str, template_id: str, 
+                   position: Tuple[float, float]) -> Dict[str, Any]:
+        """Create a new node in the project."""
+        data = {
+            "x": position[0],
+            "y": position[1],
+            "compute_id": "local",
+            "name": name
         }
         return self._request('post', f'projects/{project_id}/templates/{template_id}', data)
     
@@ -120,8 +132,37 @@ class GNS3ApiClient:
         }
         return self._request('post', f'projects/{project_id}/links', data)
     
+    def create_cloud_link(self, project_id: str, source_node_id: str,
+                          source_port: int, target_node_id: str,
+                          target_port: int) -> Dict[str, Any]:
+        """Create a link between a node and cloud."""
+ 
+        data = {
+            'nodes': [
+                {
+                    'node_id': source_node_id,
+                    'adapter_number': source_port, # Adjust for 0-based indexing
+                    'port_number': 0
+                },
+                {
+                    'node_id': target_node_id,
+                    'adapter_number': target_port, # Adjust for 0-based indexing
+                    'port_number': 0
+                }
+            ],
+            'filters': {},
+            'link_style': {},
+            'suspend': False
+        }
+ 
+        return self._request('post', f'projects/{project_id}/links', data)
+    
  
     def update_node(self, project_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
          """Update node"""
          return self._request('post', f'projects/{project_id}/links', data)
+    
+    def update_cloud(self, project_id: str, node_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Update cloud node"""
+        return self._request('put', f'projects/{project_id}/nodes/{node_id}', data)
     

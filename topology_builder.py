@@ -3,6 +3,7 @@ from data_model import Device
 from api_interactions import GNS3ApiClient, GNS3ApiError
 import logging
 import yaml
+import random
 
 class TopologyBuilder:
     """Builds GNS3 topologies based on device data."""
@@ -73,17 +74,51 @@ class TopologyBuilder:
                 template_id = self._get_template_for_device(device)
                 
                 # Use device position or default to (0,0)
-                position = device.position if device.position else (0, 0) #TODO add random position generator if no position is given
+                position = device.position if device.position else (random.randint(-100, 100), random.randint(-100, 100)) #TODO add random position generator if no position is given
                 # Scale position using separate factors for x and y
                 position = (int(position[0] * scale_x), int(position[1] * scale_y))
                 
-                # Create node in GNS3
-                node = self.api_client.create_node(
-                    project_id=project_id,
-                    name=device.name or f"{device.family}-{device.model}",
-                    template_id=template_id,
-                    position=position
-                )
+                if device.family == "cloud":
+                    self.logger.info(f"Creating cloud node for device: {device.name}")
+                    node = self.api_client.create_cloud(
+                        project_id=project_id,
+                        name=device.name or f"{device.family}-{device.model}",
+                        template_id=template_id,
+                        position=position
+                    )
+
+                    cloud_data_dict = {
+                        "properties": {
+                            "ports_mapping": [
+                                {
+                                    "interface": "ens33",
+                                    "name": "ens33",
+                                    "port_number": 0,
+                                    "type": "ethernet"
+                                },
+                                {
+                                    "name": "virbr0",
+                                    "port_number": 1,
+                                    "type": "ethernet",
+                                    "interface": "virbr0"
+                                }
+                            ]
+                        },
+                        "node_type": "cloud",
+                        "node_id": node['node_id'],
+                        "compute_id": "local"
+                    }
+
+                    node = self.api_client.update_cloud(node["project_id"], node["node_id"], cloud_data_dict)
+
+                else:
+                    # Create node in GNS3
+                    node = self.api_client.create_node(
+                        project_id=project_id,
+                        name=device.name or f"{device.family}-{device.model}",
+                        template_id=template_id,
+                        position=position
+                    )
                 
                 # Store mapping
                 node_mapping[device.id] = node['node_id']

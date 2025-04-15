@@ -55,7 +55,6 @@ class connections:
             
             if 'WeConfigConnection' in child.tag: #WeConfig connection is the computer running WeConfig, this will be the cloud node
                 test = child.attrib
-                print('!!!!!', test, child[0].attrib)
                 self.conn_dict['cloud'] = {}
                 self.conn_dict['cloud']['SourceDeviceId'] = 'cloud'
                 self.conn_dict['cloud']['TargetDeviceId'] = child.attrib['DeviceId']

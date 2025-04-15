@@ -1,6 +1,6 @@
 # GNS3 Server Configuration
 gns3_server:
-  host: "10.2.100.215"
+  host: "10.2.100.235"
   port: 3080
   protocol: "http"
   # username: ""
@@ -20,9 +20,11 @@ template:
   device_templates:
     RedFox: "571dd592-af0a-42a5-a0a2-37874179b962" #RED
     Lynx: "ec72173d-070f-42b6-b772-251204399f58" #BLUE
-    #cloud: "39e257dc-8412-3174-b6b3-0ee3ed6a43e9"
+    cloud: "39e257dc-8412-3174-b6b3-0ee3ed6a43e9"
     #Viper: "template-id-for-wolverine" #GREEN
   # Specific model templates
   model_templates:
     #"RedFox-5528-E-F4G-T24G-LV": "template-id-for-specific-model"
-    Lynx-5528-E-F4G-T24G-LV": "af07f21c-c12f-4736-b425-55e24d49023f"
+    #Lynx-5528-E-F4G-T24G-LV": "af07f21c-c12f-4736-b425-55e24d49023f"
+    Lynx-3510-E-F2G-T8G-LV: "af07f21c-c12f-4736-b425-55e24d49023f"
+    Lynx-3510-E-F2G-P8G-LV: "af07f21c-c12f-4736-b425-55e24d49023f"

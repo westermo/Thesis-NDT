@@ -53,24 +53,45 @@ class LinkBuilder:
                 if not source_node_id or not target_node_id:
                     self.logger.warning(f"Skipping connection {conn_id}: Device not found in node mapping")
                     continue
+
+                if conn_id.startswith('cloud'):
+                    # Handle cloud connections differently if needed
+                    self.logger.info(f"Creating cloud connection for {conn_id}")
+
+                    # Create the link using the API client
+                    link = self.api_client.create_cloud_link(
+                        project_id, 
+                        source_node_id, 
+                        1, #virbr0 is the second interface in the cloud node 
+                        target_node_id, 
+                        target_port
+                    )
+                    
+                    links_created.append({
+                        'connection_id': conn_id,
+                        'link_id': link.get('link_id'),
+                        'source_device': source_device_id,
+                        'target_device': target_device_id
+                    })
                 
-                # Create the link using the API client
-                link = self.api_client.create_link(
-                    project_id, 
-                    source_node_id, 
-                    source_port, 
-                    target_node_id, 
-                    target_port
-                )
-                
-                links_created.append({
-                    'connection_id': conn_id,
-                    'link_id': link.get('link_id'),
-                    'source_device': source_device_id,
-                    'target_device': target_device_id
-                })
-                
-                self.logger.info(f"Created link for connection {conn_id}")
+                else:
+                    # Create the link using the API client
+                    link = self.api_client.create_link(
+                        project_id, 
+                        source_node_id, 
+                        source_port, 
+                        target_node_id, 
+                        target_port
+                    )
+                    
+                    links_created.append({
+                        'connection_id': conn_id,
+                        'link_id': link.get('link_id'),
+                        'source_device': source_device_id,
+                        'target_device': target_device_id
+                    })
+                    
+                    self.logger.info(f"Created link for connection {conn_id}")
                 
             except Exception as e:
                 self.logger.error(f"Failed to create link for connection {conn_id}: {str(e)}")

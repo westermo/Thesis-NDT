@@ -30,4 +30,4 @@ class Device:
     ip_address: Optional[str] = None
     #net_mask: Optional[str] = None
     ports: Dict[str, Port] = field(default_factory=dict)
-    vlans: Dict[str, Vlan] = field(default_factory=dict)
+    vlans: Optional[Dict[str, Vlan]] = field(default_factory=dict)
