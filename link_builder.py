@@ -62,7 +62,7 @@ class LinkBuilder:
                     link = self.api_client.create_cloud_link(
                         project_id, 
                         source_node_id, 
-                        1, #virbr0 is the second interface in the cloud node 
+                        source_port, #virbr0 is the second interface in the cloud node 
                         target_node_id, 
                         target_port
                     )

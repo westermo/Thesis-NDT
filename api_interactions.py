@@ -2,6 +2,7 @@ import requests
 import yaml
 import logging
 from typing import Dict, Any, Optional, List, Tuple
+import json
 
 class GNS3ApiError(Exception):
     """Custom exception for GNS3 API errors."""
@@ -36,11 +37,15 @@ class GNS3ApiClient:
         """Make a request to the GNS3 API."""
         url = f"{self.base_url}/{endpoint}"
         self.logger.debug(f"Making {method} request to {url}")
-        
+    
         try:
             if method.lower() == 'get':
                 response = self.session.get(url)
             elif method.lower() == 'post':
+                # Print the entire POST request details instead of just logging the data
+                print(f"POST Request to {url}")
+                print(f"Headers: {self.session.headers}")
+                print(f"Body: {json.dumps(data, indent=2)}")
                 response = self.session.post(url, json=data)
             elif method.lower() == 'put':
                 response = self.session.put(url, json=data)
@@ -48,7 +53,7 @@ class GNS3ApiClient:
                 response = self.session.delete(url)
             else:
                 raise GNS3ApiError(f"Unsupported HTTP method: {method}")
-        
+    
             response.raise_for_status()
             return response.json() if response.content else {}
         except requests.exceptions.RequestException as e:
@@ -141,12 +146,12 @@ class GNS3ApiClient:
             'nodes': [
                 {
                     'node_id': source_node_id,
-                    'adapter_number': source_port, # Adjust for 0-based indexing
-                    'port_number': 0
+                    'adapter_number': 0, # Adjust for 0-based indexing
+                    'port_number': 1
                 },
                 {
                     'node_id': target_node_id,
-                    'adapter_number': target_port, # Adjust for 0-based indexing
+                    'adapter_number': target_port - 1, # Adjust for 0-based indexing
                     'port_number': 0
                 }
             ],

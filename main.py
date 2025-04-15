@@ -103,9 +103,10 @@ def create_unique_folder(base_path: str, prefix: str) -> str:
 print("Testing weconfig CLI tool...")
 print("-" * 50)
 
-project = "test.nrpj"
+project = "test.nprj"
 
 run_scan(project, "Ethernet 2")
+run_backup(project, "169.254.1.1/16")
 
 # Example usage
 unique_folder = create_unique_folder("./topologies", "project")
