@@ -15,7 +15,7 @@ import os
 import zipfile
 import argparse
 import platform
-import datetime
+from datetime import datetime
 import random
 
 import paramiko
@@ -51,16 +51,22 @@ def run_backup(path, ip):
         subprocess.run(['../Publish/WeConfig.exe', "backup", "-s", ip, "-p", path])
         #Command to run weconfig in windows!
 
-def transfer_file(ssh_client):
+def transfer_file(ssh_client, folder_path):
     scp = SCPClient(ssh_client.get_transport())
-    scp.put(f'{unique_folder}', recursive=True,remote_path='~/NDT/project_files/')
+    scp.put(f'{folder_path}', recursive=True,remote_path='~/NDT/project_files/')
     scp.close()
 
-def set_config(unique_folder, device, ssh_client):
-    ssh_client.exec_command(f'./restore.sh admin admin device.name ./NDT/project_files/{unique_folder}/Configuration Backups/\
-                            {device.id}/{get_newest_file(unique_folder + "/Configuration Backups/" + device.id)}')
-
- 
+def set_config(folder_path, device, ssh_client):
+    config_path = f"{folder_path}/Configuration Backups/{device.id}"
+    #newest_file = get_newest_file(config_path)
+    
+    print(f"unique_folder: {folder_path}")
+    print(f'./restore.sh admin admin {device.name}.local ./NDT/project_files/{folder_path}/Configuration Backups/{device.id}/')
+    print(f'{config_path}')
+    
+    #command = f'./restore.sh admin admin {device.name} ./NDT/project_files/{folder_path}/Configuration Backups/{device.id}/{newest_file}'
+    #print(f'Executing command: {command}')
+    #ssh_client.exec_command(command)
 
 def extract_zip(zip_path, extract_to=None):
 
@@ -74,12 +80,13 @@ def extract_zip(zip_path, extract_to=None):
         
     print(f"Extracted ZIP archive to {extract_to}")
 
+#TODO should just return a unique name
 def create_unique_folder(base_path: str, prefix: str) -> str:
     """
     Creates a unique timestamped folder and returns its path.
     """
     # Generate unique folder name with timestamp
-    timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M")
+    timestamp = datetime.now().strftime("%y%m%d_%H%M")
     folder_name = f"{prefix}_{timestamp}"
     folder_path = os.path.join(base_path, folder_name)
     
@@ -93,13 +100,13 @@ def get_newest_file(directory):
     # Initialize variables to keep track of the newest file and its timestamp
     newest_file = None
     newest_timestamp = None
-    
+   
     # Iterate over each file in the directory
     for file in os.listdir(directory):
         # Extract timestamp from file name if it matches the expected format
         try:
             timestamp = datetime.strptime(file, "%Y-%m-%dT%H_%M_%SZ.json")
-            
+           
             # Update newest file and timestamp if current file is newer
             if newest_timestamp is None or timestamp > newest_timestamp:
                 newest_file = file
@@ -107,7 +114,11 @@ def get_newest_file(directory):
         except ValueError:
             # Skip files that do not match the expected format
             continue
-    
+   
+    # Check if we found any valid files
+    if newest_file is None:
+        raise FileNotFoundError(f"No valid timestamped files found in {directory}")
+        
     return newest_file
 
 
@@ -278,14 +289,12 @@ try:
 except Exception:
         print('fel')
 
-transfer_file(ssh)
+print(f"unique_folder: {unique_folder}")
+transfer_file(unique_folder, ssh)
 
 api_client.start_nodes(project_id)
 
+print(f"unique_folder: {unique_folder}")
 for device in device_list:
-    set_config(unique_folder, device, ssh)
-#TODO Ny anslutning till server. 
-#TODO for device in device_list: 
-#TODO ssh.exec_command('./restore.sh admin admin device.name ./NDT/project_files/{unique_folder}/Configuration Backups/{device.id}/{find latest backup}')
-# 
-#   
+    if device.name != "cloud":
+        set_config(unique_folder, device, ssh)
