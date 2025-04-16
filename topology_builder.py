@@ -109,8 +109,9 @@ class TopologyBuilder:
                         "compute_id": "local"
                     }
 
-                    node = self.api_client.update_cloud(node["project_id"], node["node_id"], cloud_data_dict)
-
+                    node = self.api_client.update_node(node["project_id"], 
+                                                node["node_id"], 
+                                                cloud_data_dict)
                 else:
                     # Create node in GNS3
                     node = self.api_client.create_node(
@@ -119,7 +120,18 @@ class TopologyBuilder:
                         template_id=template_id,
                         position=position
                     )
-                
+
+                    base_mac_dict = {
+                        "properties": {
+                            "base_mac": device.base_mac
+                        }
+                    }
+
+                    # call set_mac to set the base mac of the node
+                    self.api_client.update_node(node["project_id"], 
+                                                node["node_id"], 
+                                                base_mac_dict)
+
                 # Store mapping
                 node_mapping[device.id] = node['node_id']
                 self.logger.info(f"Created node for device: {device.name} (using template: {template_id})")

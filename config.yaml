@@ -1,3 +1,7 @@
+# Green: Lynx with POE
+# Blue: Original Lynx
+# Red: 
+
 # GNS3 Server Configuration
 gns3_server:
   host: "10.2.100.235"
@@ -14,12 +18,12 @@ project:
     y: 2
   
 template:
-  # Default template as fallback
+  # Default template as fallback (not supported)
   default_appliance_id: "0da18376-a083-4284-9610-e1f3db7d9344"
   # Family-specific templates
   device_templates:
-    RedFox: "571dd592-af0a-42a5-a0a2-37874179b962" #RED
-    Lynx: "ec72173d-070f-42b6-b772-251204399f58" #BLUE
+    #RedFox: "571dd592-af0a-42a5-a0a2-37874179b962" #RED
+    #Lynx: "ec72173d-070f-42b6-b772-251204399f58" #BLUE
     cloud: "39e257dc-8412-3174-b6b3-0ee3ed6a43e9"
     #Viper: "template-id-for-wolverine" #GREEN
   # Specific model templates
@@ -27,4 +31,5 @@ template:
     #"RedFox-5528-E-F4G-T24G-LV": "template-id-for-specific-model"
     #Lynx-5528-E-F4G-T24G-LV": "af07f21c-c12f-4736-b425-55e24d49023f"
     Lynx-3510-E-F2G-T8G-LV: "af07f21c-c12f-4736-b425-55e24d49023f"
-    Lynx-3510-E-F2G-P8G-LV: "af07f21c-c12f-4736-b425-55e24d49023f"
+    Lynx-3510-E-F2G-P8G-LV: "0f9aa3c1-5c46-441b-90a6-cbaf629c6ad2"
+    Lynx-5512-E-F4G-T8G-LV: "be98b4e5-b97b-46b9-a0a7-3300572fc913"

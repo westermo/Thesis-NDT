@@ -206,6 +206,7 @@ topology_builder = TopologyBuilder()
 # List available templates to help with configuration
 #topology_builder.list_available_templates()
 
+# BUILD DEVICES
 try:
     node_mapping = topology_builder.build_topology(device_list)
     
