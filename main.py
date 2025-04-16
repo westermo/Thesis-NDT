@@ -183,8 +183,6 @@ for device in device_list:
     
     print("-" * 50)
 
-input("Press Enter to continue...")
-
 print("\nTesting GNS3 API and Topology Builder")
 print("-" * 50)
 

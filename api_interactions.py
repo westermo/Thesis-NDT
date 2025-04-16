@@ -125,12 +125,12 @@ class GNS3ApiClient:
             'nodes': [
                 {
                     'node_id': source_node_id,
-                    'adapter_number': source_port, # Adjust for 0-based indexing
+                    'adapter_number': source_port,
                     'port_number': 0
                 },
                 {
                     'node_id': target_node_id,
-                    'adapter_number': target_port, # Adjust for 0-based indexing
+                    'adapter_number': target_port,
                     'port_number': 0
                 }
             ]
@@ -146,12 +146,13 @@ class GNS3ApiClient:
             'nodes': [
                 {
                     'node_id': source_node_id,
-                    'adapter_number': 0, # Adjust for 0-based indexing
+                    'adapter_number': 0,
                     'port_number': 1
+                    # will always be 0/1 for cloud node
                 },
                 {
                     'node_id': target_node_id,
-                    'adapter_number': target_port - 1, # Adjust for 0-based indexing
+                    'adapter_number': target_port,
                     'port_number': 0
                 }
             ],
