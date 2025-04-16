@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Version="3.1" xmlns="http://westermo.com/weconfig">
+  <PhysicalNetwork>
+    <Nodes>
+      <WeConfigPc>
+        <Facets xmlns="http://westermo.com/weconfig/device-facets">
+          <NetworkInterfaces>
+            <Interface Name="Ethernet 2">
+              <Address Value="169.254.191.183/16" />
+            </Interface>
+            <Interface Name="VMware Network Adapter VMnet1">
+              <Address Value="192.168.154.1/24" />
+            </Interface>
+            <Interface Name="VMware Network Adapter VMnet8">
+              <Address Value="192.168.204.1/24" />
+            </Interface>
+            <Interface Name="Wi-Fi">
+              <Address Value="10.2.17.53/20" />
+            </Interface>
+          </NetworkInterfaces>
+        </Facets>
+      </WeConfigPc>
+      <Device SchemaVersion="2" Id="ad2d94aa-c723-4e11-9da2-38bbb9fc23ac" Family="Lynx" Model="Lynx-3510-E-F2G-P8G-LV" FirmwareVersion="5.23.0" xmlns="http://westermo.com/weconfig/device/weos5">
+        <BackupFirmwareVersion>5.23.0</BackupFirmwareVersion>
+        <BootLoaderVersion>2024.03.0-1</BootLoaderVersion>
+        <ManagementIpAddress>169.254.24.80</ManagementIpAddress>
+        <IpConflict>False</IpConflict>
+        <IsManuallyAdded>False</IsManuallyAdded>
+        <LastContactUtc>0001-01-01T00:00:00.0000000</LastContactUtc>
+        <ChassisId Type="MacAddress">00:11:B4:71:8C:80</ChassisId>
+        <Ports>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="19" IsManuallyAdded="False" Up="False">
+            <Name Name="eth1" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:81</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="18" IsManuallyAdded="False" Up="False">
+            <Name Name="eth2" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:82</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="17" IsManuallyAdded="False" Up="False">
+            <Name Name="eth3" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:83</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="16" IsManuallyAdded="False" Up="False">
+            <Name Name="eth4" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:84</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="15" IsManuallyAdded="False" Up="False">
+            <Name Name="eth5" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:85</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="14" IsManuallyAdded="False" Up="False">
+            <Name Name="eth6" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:86</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="13" IsManuallyAdded="False" Up="False">
+            <Name Name="eth7" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:87</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="12" IsManuallyAdded="False" Up="False">
+            <Name Name="eth8" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:88</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="11" IsManuallyAdded="False" Up="True">
+            <Name Name="eth9" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:89</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="10" IsManuallyAdded="False" Up="False">
+            <Name Name="eth10" />
+            <PortId Type="MacAddress">00:11:B4:71:8C:8A</PortId>
+          </Port>
+        </Ports>
+        <Facets xmlns="http://westermo.com/weconfig/device-facets">
+          <NetworkInterfaces>
+            <Interface Name="vlan1">
+              <Address Value="169.254.24.80/16" />
+            </Interface>
+          </NetworkInterfaces>
+          <Accounts>
+            <Account Username="admin" Password="frpTLj+jMoCiXmccEmhH7w==" Kind="7" Hash="$1$P6324OXU$bjjOCz3PfGNzz3qeO8k2k1" />
+          </Accounts>
+          <CliInterfaceSettings Port="22" />
+          <CertificateInformation Thumbprint="CFD96C0273C94C6AA06E9F75A85AE97F60DD9815" />
+          <Mrp />
+          <HardwareInformation>
+            <Architecture>Envoy</Architecture>
+            <Platform>Envoy</Platform>
+            <Product>Lynx-3510-E-F2G-P8G-LV</Product>
+            <ArticleNumber>3627-0512-004</ArticleNumber>
+            <HardwareRevision>0</HardwareRevision>
+          </HardwareInformation>
+          <DiscoverySource From="169.254.191.183" Source="mDNS" />
+          <SystemInformation>
+            <IsRouter>True</IsRouter>
+            <Hostname>A</Hostname>
+            <SerialNumber>1936</SerialNumber>
+          </SystemInformation>
+          <Vlan>
+            <Vlan Vid="1" IsEnabled="True" InterfaceName="vlan1">
+              <UntaggedPort>eth1</UntaggedPort>
+              <UntaggedPort>eth2</UntaggedPort>
+              <UntaggedPort>eth3</UntaggedPort>
+              <UntaggedPort>eth4</UntaggedPort>
+              <UntaggedPort>eth5</UntaggedPort>
+              <UntaggedPort>eth6</UntaggedPort>
+              <UntaggedPort>eth7</UntaggedPort>
+              <UntaggedPort>eth8</UntaggedPort>
+              <UntaggedPort>eth9</UntaggedPort>
+              <UntaggedPort>eth10</UntaggedPort>
+            </Vlan>
+          </Vlan>
+          <Frnt>
+            <V2 />
+          </Frnt>
+          <RoutingTable>
+            <Content>S - Static | C - Connected | K - Kernel route  | &gt; - Selected route
+O - OSPF   | R - RIP       | [Distance/Metric] | * - FIB route
+
+C&gt;* 169.254.0.0/16 is directly connected, vlan1, 18:23:42</Content>
+            <Timestamp>2025-04-16T10:50:28.8048967+02:00</Timestamp>
+            <Entries>
+              <Entry Type="Connected" SubnetAddress="169.254.0.0/16" IsFibRoute="True" IsSelected="True" Interface="vlan1" />
+            </Entries>
+          </RoutingTable>
+          <Aggregate />
+          <WebInterfaceSettings Port="443" UnsecurePort="80" />
+          <SSHHostKey Fingerprint="p9PPDtegg7ENfDoAzg57EPUeYJ+6GX1Ordxv2NmsZik" />
+        </Facets>
+      </Device>
+      <Device SchemaVersion="2" Id="f0558e11-fe37-4653-ac6d-8079975e4977" Family="Lynx" Model="Lynx-3510-E-F2G-T8G-LV" FirmwareVersion="5.21.0" xmlns="http://westermo.com/weconfig/device/weos5">
+        <BackupFirmwareVersion>5.21.0</BackupFirmwareVersion>
+        <BootLoaderVersion>2022.08.0-1</BootLoaderVersion>
+        <ManagementIpAddress>169.254.7.150</ManagementIpAddress>
+        <IpConflict>False</IpConflict>
+        <IsManuallyAdded>False</IsManuallyAdded>
+        <LastContactUtc>0001-01-01T00:00:00.0000000</LastContactUtc>
+        <ChassisId Type="MacAddress">00:11:B4:97:C1:80</ChassisId>
+        <Ports>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="19" IsManuallyAdded="False" Up="False">
+            <Name Name="eth1" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:81</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="18" IsManuallyAdded="False" Up="False">
+            <Name Name="eth2" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:82</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="17" IsManuallyAdded="False" Up="False">
+            <Name Name="eth3" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:83</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="16" IsManuallyAdded="False" Up="False">
+            <Name Name="eth4" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:84</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="15" IsManuallyAdded="False" Up="False">
+            <Name Name="eth5" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:85</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="14" IsManuallyAdded="False" Up="True">
+            <Name Name="eth6" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:86</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="13" IsManuallyAdded="False" Up="False">
+            <Name Name="eth7" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:87</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="12" IsManuallyAdded="False" Up="False">
+            <Name Name="eth8" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:88</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="11" IsManuallyAdded="False" Up="True">
+            <Name Name="eth9" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:89</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="10" IsManuallyAdded="False" Up="False">
+            <Name Name="eth10" />
+            <PortId Type="MacAddress">00:11:B4:97:C1:8A</PortId>
+          </Port>
+        </Ports>
+        <Facets xmlns="http://westermo.com/weconfig/device-facets">
+          <NetworkInterfaces>
+            <Interface Name="vlan1">
+              <Address Value="169.254.7.150/16" />
+            </Interface>
+          </NetworkInterfaces>
+          <Accounts>
+            <Account Username="admin" Password="frpTLj+jMoCiXmccEmhH7w==" Kind="7" Hash="$1$P6324OXU$bjjOCz3PfGNzz3qeO8k2k1">
+              <PublicKey Value="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPmWmkySMGIQKZW2Mb77cUVwevqY06jSN9LSX7CaOVfc wemo\oskst@WSE-C-zYls9TIJr&#xD;" />
+            </Account>
+          </Accounts>
+          <CliInterfaceSettings Port="22" />
+          <CertificateInformation Thumbprint="730AC1441E7FA992EE53C0BA13A48B5B5C547135" />
+          <Mrp />
+          <HardwareInformation>
+            <Architecture>Envoy</Architecture>
+            <Platform>Envoy</Platform>
+            <Product>Lynx-3510-E-F2G-T8G-LV</Product>
+            <ArticleNumber>3627-0530-003</ArticleNumber>
+            <HardwareRevision>0</HardwareRevision>
+          </HardwareInformation>
+          <DiscoverySource From="169.254.191.183" Source="mDNS" />
+          <SystemInformation>
+            <IsRouter>True</IsRouter>
+            <Hostname>C</Hostname>
+            <Location>vasteras</Location>
+            <SerialNumber>7664</SerialNumber>
+          </SystemInformation>
+          <Vlan>
+            <Vlan Vid="1" IsEnabled="True" InterfaceName="vlan1">
+              <UntaggedPort>eth1</UntaggedPort>
+              <UntaggedPort>eth2</UntaggedPort>
+              <UntaggedPort>eth3</UntaggedPort>
+              <UntaggedPort>eth4</UntaggedPort>
+              <UntaggedPort>eth5</UntaggedPort>
+              <UntaggedPort>eth6</UntaggedPort>
+              <UntaggedPort>eth7</UntaggedPort>
+              <UntaggedPort>eth8</UntaggedPort>
+              <UntaggedPort>eth9</UntaggedPort>
+              <UntaggedPort>eth10</UntaggedPort>
+            </Vlan>
+          </Vlan>
+          <Frnt>
+            <V2 />
+          </Frnt>
+          <RoutingTable>
+            <Content>S - Static | C - Connected | K - Kernel route  | &gt; - Selected route
+O - OSPF   | R - RIP       | [Distance/Metric] | * - FIB route
+
+C&gt;* 169.254.0.0/16 is directly connected, vlan1, 19:48:04</Content>
+            <Timestamp>2025-04-16T10:50:28.8038217+02:00</Timestamp>
+            <Entries>
+              <Entry Type="Connected" SubnetAddress="169.254.0.0/16" IsFibRoute="True" IsSelected="True" Interface="vlan1" />
+            </Entries>
+          </RoutingTable>
+          <Aggregate />
+          <WebInterfaceSettings Port="443" UnsecurePort="80" />
+          <SSHHostKey Fingerprint="5q1cjpT37wRCN1FpIxlwPTNypDS+U1T1DCmLVj/CHPY" />
+        </Facets>
+      </Device>
+      <Device SchemaVersion="2" Id="45234114-0b38-45b4-b6c0-f2f0ea67ae2b" Family="Lynx" Model="Lynx-5512-E-F4G-T8G-LV" FirmwareVersion="5.23.0" xmlns="http://westermo.com/weconfig/device/weos5">
+        <BackupFirmwareVersion>5.23.0</BackupFirmwareVersion>
+        <BootLoaderVersion>2024.03.0-1</BootLoaderVersion>
+        <ManagementIpAddress>169.254.96.138</ManagementIpAddress>
+        <IpConflict>False</IpConflict>
+        <IsManuallyAdded>False</IsManuallyAdded>
+        <LastContactUtc>0001-01-01T00:00:00.0000000</LastContactUtc>
+        <ChassisId Type="MacAddress">00:07:7C:00:10:90</ChassisId>
+        <Ports>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="11" IsManuallyAdded="False" Up="False">
+            <Name Name="eth1" />
+            <PortId Type="MacAddress">00:07:7C:00:10:91</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="12" IsManuallyAdded="False" Up="False">
+            <Name Name="eth2" />
+            <PortId Type="MacAddress">00:07:7C:00:10:92</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="13" IsManuallyAdded="False" Up="True">
+            <Name Name="eth3" />
+            <PortId Type="MacAddress">00:07:7C:00:10:93</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="14" IsManuallyAdded="False" Up="False">
+            <Name Name="eth4" />
+            <PortId Type="MacAddress">00:07:7C:00:10:94</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="15" IsManuallyAdded="False" Up="False">
+            <Name Name="eth5" />
+            <PortId Type="MacAddress">00:07:7C:00:10:95</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="16" IsManuallyAdded="False" Up="False">
+            <Name Name="eth6" />
+            <PortId Type="MacAddress">00:07:7C:00:10:96</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="17" IsManuallyAdded="False" Up="False">
+            <Name Name="eth7" />
+            <PortId Type="MacAddress">00:07:7C:00:10:97</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="18" IsManuallyAdded="False" Up="True">
+            <Name Name="eth8" />
+            <PortId Type="MacAddress">00:07:7C:00:10:98</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="19" IsManuallyAdded="False" Up="False">
+            <Name Name="eth9" />
+            <PortId Type="MacAddress">00:07:7C:00:10:99</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="20" IsManuallyAdded="False" Up="False">
+            <Name Name="eth10" />
+            <PortId Type="MacAddress">00:07:7C:00:10:9A</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="21" IsManuallyAdded="False" Up="False">
+            <Name Name="eth11" />
+            <PortId Type="MacAddress">00:07:7C:00:10:9B</PortId>
+          </Port>
+          <Port PhysicalLayer="EthernetCopper" InterfaceIndex="22" IsManuallyAdded="False" Up="False">
+            <Name Name="eth12" />
+            <PortId Type="MacAddress">00:07:7C:00:10:9C</PortId>
+          </Port>
+        </Ports>
+        <Facets xmlns="http://westermo.com/weconfig/device-facets">
+          <NetworkInterfaces>
+            <Interface Name="vlan1">
+              <Address Value="169.254.96.138/16" />
+            </Interface>
+          </NetworkInterfaces>
+          <Accounts>
+            <Account Username="admin" Password="frpTLj+jMoCiXmccEmhH7w==" Kind="7" Hash="$1$P6324OXU$bjjOCz3PfGNzz3qeO8k2k1" />
+          </Accounts>
+          <CliInterfaceSettings Port="22" />
+          <CertificateInformation Thumbprint="4C961F227C2C4D3D50582EB0578976F8682D71E7" />
+          <Mrp />
+          <HardwareInformation>
+            <Architecture>Dagger</Architecture>
+            <Platform>Dagger</Platform>
+            <Product>Lynx-5512-E-F4G-T8G-LV</Product>
+            <ArticleNumber>0000-0000</ArticleNumber>
+            <HardwareRevision>0</HardwareRevision>
+          </HardwareInformation>
+          <DiscoverySource From="169.254.191.183" Source="mDNS" />
+          <SystemInformation>
+            <IsRouter>True</IsRouter>
+            <Hostname>B</Hostname>
+            <SerialNumber>0</SerialNumber>
+          </SystemInformation>
+          <Vlan>
+            <Vlan Vid="1" IsEnabled="True" InterfaceName="vlan1">
+              <UntaggedPort>eth1</UntaggedPort>
+              <UntaggedPort>eth2</UntaggedPort>
+              <UntaggedPort>eth3</UntaggedPort>
+              <UntaggedPort>eth4</UntaggedPort>
+              <UntaggedPort>eth5</UntaggedPort>
+              <UntaggedPort>eth6</UntaggedPort>
+              <UntaggedPort>eth7</UntaggedPort>
+              <UntaggedPort>eth8</UntaggedPort>
+              <UntaggedPort>eth9</UntaggedPort>
+              <UntaggedPort>eth10</UntaggedPort>
+              <UntaggedPort>eth11</UntaggedPort>
+              <UntaggedPort>eth12</UntaggedPort>
+            </Vlan>
+          </Vlan>
+          <Frnt>
+            <V2 />
+          </Frnt>
+          <RoutingTable>
+            <Content>S - Static | C - Connected | K - Kernel route  | &gt; - Selected route
+O - OSPF   | R - RIP       | [Distance/Metric] | * - FIB route
+
+C&gt;* 169.254.0.0/16 is directly connected, vlan1, 1d00h11m</Content>
+            <Timestamp>2025-04-16T10:50:28.8065298+02:00</Timestamp>
+            <Entries>
+              <Entry Type="Connected" SubnetAddress="169.254.0.0/16" IsFibRoute="True" IsSelected="True" Interface="vlan1" />
+            </Entries>
+          </RoutingTable>
+          <Aggregate />
+          <WebInterfaceSettings Port="443" UnsecurePort="80" />
+          <SSHHostKey Fingerprint="ttA56I6rW67JtlxMwxJ6WcupzLGSH43L5H0FmCAvL/U" />
+        </Facets>
+      </Device>
+    </Nodes>
+    <Connections>
+      <WeConfigConnection DeviceId="f0558e11-fe37-4653-ac6d-8079975e4977">
+        <Name Name="eth9" />
+      </WeConfigConnection>
+      <AggregatePortConnection SourceDeviceId="45234114-0b38-45b4-b6c0-f2f0ea67ae2b" TargetDeviceId="ad2d94aa-c723-4e11-9da2-38bbb9fc23ac">
+        <PortConnection>
+          <SourceDevicePort>
+            <Name Name="eth3" />
+          </SourceDevicePort>
+          <TargetDevicePort>
+            <Name Name="eth9" />
+          </TargetDevicePort>
+        </PortConnection>
+      </AggregatePortConnection>
+      <AggregatePortConnection SourceDeviceId="f0558e11-fe37-4653-ac6d-8079975e4977" TargetDeviceId="45234114-0b38-45b4-b6c0-f2f0ea67ae2b">
+        <PortConnection>
+          <SourceDevicePort>
+            <Name Name="eth6" />
+          </SourceDevicePort>
+          <TargetDevicePort>
+            <Name Name="eth8" />
+          </TargetDevicePort>
+        </PortConnection>
+      </AggregatePortConnection>
+    </Connections>
+  </PhysicalNetwork>
+</Project>
