@@ -123,7 +123,7 @@ class TopologyBuilder:
 
                     base_mac_dict = {
                         "properties": {
-                            "base_mac": device.base_mac
+                            "mac_address": device.base_mac
                         }
                     }
 

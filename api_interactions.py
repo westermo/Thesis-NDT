@@ -167,9 +167,3 @@ class GNS3ApiClient:
     def update_node(self, project_id: str, node_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Update cloud node"""
         return self._request('put', f'projects/{project_id}/nodes/{node_id}', data)
-    
-    def set_mac(self, project_id: str, node_id: str,
-                data: Dict[str, Any]) -> Dict[str, Any]:
-        """Update cloud node"""
-        return self._request('put', 
-                             f'projects/{project_id}/nodes/{node_id}', str(data))
