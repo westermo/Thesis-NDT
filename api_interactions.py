@@ -167,3 +167,6 @@ class GNS3ApiClient:
     def update_node(self, project_id: str, node_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Update cloud node"""
         return self._request('put', f'projects/{project_id}/nodes/{node_id}', data)
+    
+    def start_nodes(self, project_id):
+        return self._request('post', f'projects/{project_id}/nodes/start')

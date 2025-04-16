@@ -18,6 +18,9 @@ import platform
 import datetime
 import random
 
+import paramiko
+from scp import SCPClient
+
 def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
     """
     Validate that dictionary keys match dataclass fields (excluding specified fields).
@@ -48,6 +51,17 @@ def run_backup(path, ip):
         subprocess.run(['../Publish/WeConfig.exe', "backup", "-s", ip, "-p", path])
         #Command to run weconfig in windows!
 
+def transfer_file(ssh_client):
+    scp = SCPClient(ssh_client.get_transport())
+    scp.put(f'{unique_folder}', recursive=True,remote_path='~/NDT/project_files/')
+    scp.close()
+
+def set_config(unique_folder, device, ssh_client):
+    ssh_client.exec_command(f'./restore.sh admin admin device.name ./NDT/project_files/{unique_folder}/Configuration Backups/\
+                            {device.id}/{get_newest_file(unique_folder + "/Configuration Backups/" + device.id)}')
+
+ 
+
 def extract_zip(zip_path, extract_to=None):
 
     # If no extraction path is provided, extract to the same directory as the ZIP file
@@ -59,7 +73,7 @@ def extract_zip(zip_path, extract_to=None):
         zip_ref.extractall(extract_to)
         
     print(f"Extracted ZIP archive to {extract_to}")
-    
+
 def create_unique_folder(base_path: str, prefix: str) -> str:
     """
     Creates a unique timestamped folder and returns its path.
@@ -74,31 +88,46 @@ def create_unique_folder(base_path: str, prefix: str) -> str:
     print(f"Folder ready: {folder_path}")
     
     return folder_path
-#TODO set the correct base mac address in gns3 so that it matches the one in the xml file
-# 1) load from project foler or 2) load from network scan
-#TODO check if folder is empty, if it is do the scan
-#TODO check if physical topology folder already exists, if so, delete it
 
-#TODO create folder for physical topology
-#TODO perform scan of network using weconfig cli tool
-#TODO perform backup of all devices in network using weconfig cli tool
-#TODO unzip project into physical topology folder
-#TODO create project in GNS3 using GNS3 API
-#TODO create devices in GNS3 using GNS3 API
-#TODO create links between devices in GNS3 using GNS3 API
-#TODO apply configuration to devices in GNS3 using GNS3 API
-#TODO start devices in GNS3 using GNS3 API
+def get_newest_file(directory):
+    # Initialize variables to keep track of the newest file and its timestamp
+    newest_file = None
+    newest_timestamp = None
+    
+    # Iterate over each file in the directory
+    for file in os.listdir(directory):
+        # Extract timestamp from file name if it matches the expected format
+        try:
+            timestamp = datetime.strptime(file, "%Y-%m-%dT%H_%M_%SZ.json")
+            
+            # Update newest file and timestamp if current file is newer
+            if newest_timestamp is None or timestamp > newest_timestamp:
+                newest_file = file
+                newest_timestamp = timestamp
+        except ValueError:
+            # Skip files that do not match the expected format
+            continue
+    
+    return newest_file
 
-#TODO wait for user input
-#TODO check if virtual topology folder already exists, if so, delete it
-#TODO create folder for virtual topology
-#TODO scan network using weconfig cli tool (this will always use the 169.254.1.1/16 network)
-# 
-#TODO backup all devices in network using weconfig cli tool
-#TODO unzip project into project 2 folder
-#TODO check if the configuration files are the same as the ones in project 1
-#TODO apply configuration to devices in physical topology if the configuration changed
-# dont check if it changed, just apply it
+
+def get_newest_file(file_list):
+     # Initialize variables to keep track of the newest file and its timestamp
+    newest_file = None
+    newest_timestamp = None
+   
+   # Iterate over each file in the list
+    for file in file_list:
+    # Extract timestamp from file name
+        timestamp = datetime.strptime(file, "%Y-%m-%dT%H_%M_%SZ.json")
+     
+     # Update newest file and timestamp if current file is newer
+    if newest_timestamp is None or timestamp > newest_timestamp:
+        newest_file = file
+
+    return newest_file
+
+
 
 print("Testing weconfig CLI tool...")
 print("-" * 50)
@@ -242,5 +271,21 @@ try:
 except Exception as e:
     print(f"Error building links: {str(e)}")
 
+ssh = paramiko.SSHClient()
+ssh.load_system_host_keys()
+try:
+        ssh.connect(hostname='10.2.100.235', username='it')
+except Exception:
+        print('fel')
 
-#TODO 
+transfer_file(ssh)
+
+api_client.start_nodes(project_id)
+
+for device in device_list:
+    set_config(unique_folder, device, ssh)
+#TODO Ny anslutning till server. 
+#TODO for device in device_list: 
+#TODO ssh.exec_command('./restore.sh admin admin device.name ./NDT/project_files/{unique_folder}/Configuration Backups/{device.id}/{find latest backup}')
+# 
+#   
