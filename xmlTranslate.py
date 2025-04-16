@@ -34,11 +34,13 @@ class xml_info:
                 self.device_list[child.attrib.get('Id')]['position'] = tuple(pos)
             if 'ManagementIpAddress' in hostInfo.tag:
                 addresses = hostInfo.text
+            if 'ChassisId' in hostInfo.tag:
+                base_mac = hostInfo.text
         device['family'] = child.attrib.get('Family')
         device['model']= child.attrib.get('Model')
         device['image' ]= f"WeOs{child.attrib.get('FirmwareVersion')}"
         self.device_list[child.attrib.get('Id')]['ip_address'] = addresses
-        #self.device_list[child.attrib.get('Id')]['addresses']['Management'] = addresses
+        self.device_list[child.attrib.get('Id')]['base_mac'] = base_mac
 
     def getVlans(self, child):
         self.device_list[child.attrib.get('Id')]['vlans'] = {}
@@ -107,7 +109,7 @@ class xml_info:
 
 
 if __name__ == "__main__":
-    xml = xml_info(r'sample_xml\Project-3.1.xml')
+    xml = xml_info(r'topologies\project_250416_1050\Project.xml')
     xml.findDevices()
     #print(xml.showDevices())
     print('-' * 15)
