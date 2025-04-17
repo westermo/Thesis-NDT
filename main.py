@@ -338,7 +338,7 @@ transfer_file(ssh, unique_folder)
 
 api_client.start_nodes(project_id)
 
-input("Press Enter to continue...")
+input("Press enter when devices are ready")
 
 logger.info("=== Step 6/7: Starting devices ===")
 
