@@ -21,7 +21,7 @@ class Port:
 
 @dataclass
 class Device:
-    name: Optional[str] = None
+    name: Optional[str] = None #TODO THIS IS HOSTNAME
     id: Optional[str] = None
     position: Optional[Tuple[float, float]] = None
     family: Optional[str] = None

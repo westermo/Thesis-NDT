@@ -1,5 +1,6 @@
 import json
 from dataclasses import fields
+from time import sleep
 from typing import Dict, Any, Type, Set
 from data_model import Device, Port, Vlan
 from xmlTranslate import xml_info as xml_info
@@ -20,6 +21,7 @@ import random
 
 import paramiko
 from scp import SCPClient
+import logging
 
 def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
     """
@@ -52,24 +54,60 @@ def run_backup(path, ip):
         #Command to run weconfig in windows!
 
 def transfer_file(ssh_client, folder_path):
-    scp = SCPClient(ssh_client.get_transport())
-    scp.put(f'{folder_path}', recursive=True,remote_path='~/NDT/project_files/')
-    scp.close()
+    logger.info(f"Transferring folder {folder_path} via SCP")
+    try:
+        scp = SCPClient(ssh_client.get_transport())
+        scp.put(f'{folder_path}', recursive=True, remote_path='~/NDT/project_files/')
+        scp.close()
+        logger.info(f"Successfully transferred {folder_path}")
+    except Exception as e:
+        logger.error(f"Failed to transfer {folder_path}: {str(e)}")
+        raise
 
 def set_config(folder_path, device, ssh_client):
-    config_path = f"{folder_path}/Configuration Backups/{device.id}"
-    #newest_file = get_newest_file(config_path)
+    """Set device configuration using the newest backup file"""
+    remote_path = f"~/NDT/project_files/{folder_path}/Configuration\ Backups/{device.id}/"
     
-    print(f"unique_folder: {folder_path}")
-    print(f'./restore.sh admin admin {device.name}.local ./NDT/project_files/{folder_path}/Configuration Backups/{device.id}/')
-    print(f'{config_path}')
+    # Execute command to find newest file on remote server
+    stdin, stdout, stderr = ssh_client.exec_command(f"ls -t {remote_path}*.json | head -1")
+    error = stderr.read().decode('utf-8').strip()
+    if error:
+        logger.error(f"Error finding config file: {error}")
+        return
     
-    #command = f'./restore.sh admin admin {device.name} ./NDT/project_files/{folder_path}/Configuration Backups/{device.id}/{newest_file}'
-    #print(f'Executing command: {command}')
-    #ssh_client.exec_command(command)
+    config_file = stdout.read().decode('utf-8').strip()
+    if not config_file:
+        logger.error(f"No config file found in {remote_path}")
+        return
+    
+    # Extract just the filename from the full path
+    config_filename = os.path.basename(config_file)
+    
+    # Build and execute restore command
+    mac_parts = device.base_mac.split(":")
+    last_three_octets = mac_parts[-3:]
+    mac_suffix = "-".join(last_three_octets)
+    device_hostname = f"{device.family}-{mac_suffix}.local"
+    command = f'~/restore.sh admin admin {device_hostname} {remote_path}{config_filename}'
+    logger.debug(f'Executing command: {command}')
+    
+    # Execute the command
+    stdin, stdout, stderr = ssh_client.exec_command(command)
+    
+    # Get both outputs
+    output = stdout.read().decode('utf-8')
+    stderr_output = stderr.read().decode('utf-8')
+    
+    # Check for actual failure indicators in the output
+    if "Backup complete" in output or "Backup complete" in stderr_output:
+        logger.info(f"Successfully restored config for {device.name}")
+        logger.debug(f"Command stdout: {output}")
+        logger.debug(f"Command stderr (curl progress): {stderr_output}")
+    else:
+        logger.error(f"Error restoring config: {stderr_output}")
+        logger.debug(f"Command stdout: {output}")
 
 def extract_zip(zip_path, extract_to=None):
-
     # If no extraction path is provided, extract to the same directory as the ZIP file
     if extract_to is None:
         extract_to = os.path.dirname(os.path.abspath(zip_path))
@@ -78,7 +116,7 @@ def extract_zip(zip_path, extract_to=None):
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
         
-    print(f"Extracted ZIP archive to {extract_to}")
+    logger.info(f"Extracted ZIP archive to {extract_to}")
 
 #TODO should just return a unique name
 def create_unique_folder(base_path: str, prefix: str) -> str:
@@ -92,11 +130,12 @@ def create_unique_folder(base_path: str, prefix: str) -> str:
     
     # Create the folder
     os.makedirs(folder_path, exist_ok=True)
-    print(f"Folder ready: {folder_path}")
+    logger.info(f"Folder ready: {folder_path}")
     
     return folder_path
 
-def get_newest_file(directory):
+def get_newest_file(directory: str) -> str:
+    """Returns the filename (as a string) of the newest file in the directory"""
     # Initialize variables to keep track of the newest file and its timestamp
     newest_file = None
     newest_timestamp = None
@@ -121,37 +160,36 @@ def get_newest_file(directory):
         
     return newest_file
 
+# setup logging
+# level alternatives: CRITICAL, ERROR, WARNING, INFO, DEBUG
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-def get_newest_file(file_list):
-     # Initialize variables to keep track of the newest file and its timestamp
-    newest_file = None
-    newest_timestamp = None
-   
-   # Iterate over each file in the list
-    for file in file_list:
-    # Extract timestamp from file name
-        timestamp = datetime.strptime(file, "%Y-%m-%dT%H_%M_%SZ.json")
-     
-     # Update newest file and timestamp if current file is newer
-    if newest_timestamp is None or timestamp > newest_timestamp:
-        newest_file = file
+# logger level for this module
+logger.setLevel(logging.INFO)
 
-    return newest_file
+# logging level for other modules 
+logging_level = logging.ERROR
+
+# set paramiko logging level
+logging.getLogger("paramiko").setLevel(logging_level)
+
+#logger.info("=== Step 1/7: Scanning network ===")
+
+#project = "test.nprj"
+
+#run_scan(project, "Ethernet 2")
+#run_backup(project, "169.254.1.1/16")
+
+#unique_folder = create_unique_folder("./topologies", "project")
+#extract_zip(project, f"{unique_folder}")
+#print(f"Extracted project to {unique_folder}")
 
 
+logger.info("=== Step 2/7: Parsing device information ===")
 
-print("Testing weconfig CLI tool...")
-print("-" * 50)
-
-project = "test.nprj"
-
-run_scan(project, "Ethernet 2")
-run_backup(project, "169.254.1.1/16")
-
-# Example usage
-unique_folder = create_unique_folder("./topologies", "project")
-extract_zip(project, f"{unique_folder}")
-print(f"Extracted project to {unique_folder}")
+unique_folder = "topologies/project_250416_1708"
+unique_folder_without_top = unique_folder.split("/")[1]
 
 # list to store devices
 device_list: list[Device] = []
@@ -166,8 +204,6 @@ devices_dict = xml.device_list
 #append cloud device to the devices_dict
 devices_dict["cloud"] = {"name": "cloud", "id": "cloud", "family": "cloud", "ports": {"virbr0": {}}}
 
-print(devices_dict)
-
 # Iterate through the dictionary and create Device objects
 for device_id, device_data in devices_dict.items():
     # Extract ports data for separate handling
@@ -176,7 +212,6 @@ for device_id, device_data in devices_dict.items():
     vlans_data = device_data.pop("vlans", {})
     
     try:
-
         # validate dictionary keys
         if device_id != "cloud":
             validate_dict_keys(device_data, Device, ["ports", "vlans"])
@@ -202,43 +237,42 @@ for device_id, device_data in devices_dict.items():
         device_list.append(device)
         
     except Exception as e:
-        print(f"Error creating device {device_id}: {e}")
+        logger.error(f"Error creating device {device_id}: {e}")
     finally:
         # Put ports back in device_data for future reference
         device_data["ports"] = ports_data
 
 # Print device details
-for device in device_list:
-    print(f"\nDevice Details for: {device.name}")
-    for attr, value in device.__dict__.items():
-        if attr != "ports" and attr != "vlans":  # Handle port and separately
-            print(f"{attr}: {value}")
-    
-    print("VLANs:")
-    for vlan_id, vlan in device.vlans.items():
-        #print(f"  VLAN: {vlan}")
-        for vlan_attr, vlan_value in vlan.__dict__.items():
-            print(f"    {vlan_attr}: {vlan_value}")
+if logging_level == logging.DEBUG:
+    for device in device_list:
+        logger.debug(f"Device Details for: {device.name}")
+        for attr, value in device.__dict__.items():
+            if attr != "ports" and attr != "vlans":  # Handle port and separately
+                logger.debug(f"{attr}: {value}")
+        
+        logger.debug("VLANs:")
+        for vlan_id, vlan in device.vlans.items():
+            for vlan_attr, vlan_value in vlan.__dict__.items():
+                logger.debug(f"    {vlan_attr}: {vlan_value}")
 
-    
-    print("-" * 50)
+logger.info("=== Step 3/7: Building GNS3 topology ===")
 
-print("\nTesting GNS3 API and Topology Builder")
-print("-" * 50)
-
-print("Testing connection to GNS3 server...")
 api_client = GNS3ApiClient()
+
+# set logger level in api_client
+# logger level levels: CRITICAL, ERROR, WARNING, INFO, DEBUG
+api_client.logger.setLevel(logging_level)
+
 projects = api_client.get_projects()
-print(f"Connection successful! Found {len(projects)} projects.")
+logger.info(f"Connection successful! Found {len(projects)} projects.")
 
 for dict in projects:
     if dict["name"] == "auto_1":
         id = dict["project_id"]
         api_client.delete_project(id)
-        print("Deleted project auto_1")
+        logger.info("Deleted project auto_1")
 
-print("\nBuilding network topology in GNS3...")
-print("-" * 50)
+logger.info("Building network topology in GNS3...")
 
 # Create or get project and build devices
 topology_builder = TopologyBuilder()
@@ -246,21 +280,24 @@ topology_builder = TopologyBuilder()
 # List available templates to help with configuration
 #topology_builder.list_available_templates()
 
+# set logger level in topology_builder
+# logger level levels: CRITICAL, ERROR, WARNING, INFO, DEBUG
+topology_builder.logger.setLevel(logging_level)
+
 # BUILD DEVICES
 try:
     node_mapping = topology_builder.build_topology(device_list)
     
-    print(f"Successfully created topology with {len(node_mapping)} devices")
+    logger.info(f"Successfully created topology with {len(node_mapping)} devices")
     
     # Save node mapping for link creation (secondary goal)
     with open("node_mapping.json", "w") as f:
         json.dump(node_mapping, f, indent=2)
         
 except Exception as e:
-    print(f"Error building topology: {str(e)}")
+    logger.error(f"Error building topology: {str(e)}")
 
-print("\nBuilding links between devices...")
-print("-" * 50)
+logger.info("=== Step 4/7: Creating links between devices ===")
 
 # Parse connections from XML
 conn = connections(f"{unique_folder}\Project.xml")
@@ -270,6 +307,10 @@ connection_data = conn.conn_dict
 # Create link builder
 link_builder = LinkBuilder(api_client=topology_builder.api_client)
 
+# set logger level in link_builder
+# logger level levels: CRITICAL, ERROR, WARNING, INFO, DEBUG
+link_builder.logger.setLevel(logging_level)
+
 try:
     # Get project ID (reuse the same project)
     project_id = topology_builder.create_or_get_project()
@@ -277,24 +318,36 @@ try:
     # Build links
     links = link_builder.build_links(project_id, connection_data, node_mapping)
     
-    print(f"Successfully created {len(links)} links")
+    logger.info(f"Successfully created {len(links)} links")
     
 except Exception as e:
-    print(f"Error building links: {str(e)}")
+    logger.error(f"Error building links: {str(e)}")
+
+logger.info("=== Step 5/7: Transferring configuration files ===")
 
 ssh = paramiko.SSHClient()
 ssh.load_system_host_keys()
 try:
-        ssh.connect(hostname='10.2.100.235', username='it')
-except Exception:
-        print('fel')
+    ssh.connect(hostname='10.2.100.235', username='it')
+    logger.info("Successfully connected to SSH server")
+except Exception as e:
+    logger.error(f"Failed to connect to SSH server: {str(e)}")
 
-print(f"unique_folder: {unique_folder}")
-transfer_file(unique_folder, ssh)
+logger.debug(f"unique_folder: {unique_folder}")
+transfer_file(ssh, unique_folder)
 
 api_client.start_nodes(project_id)
 
-print(f"unique_folder: {unique_folder}")
+input("Press Enter to continue...")
+
+logger.info("=== Step 6/7: Starting devices ===")
+
+logger.info("Started all nodes in the project")
+
+logger.info("=== Step 7/7: Configuring devices ===")
+
 for device in device_list:
     if device.name != "cloud":
-        set_config(unique_folder, device, ssh)
+        set_config(unique_folder_without_top, device, ssh)
+
+logger.info("=== Script execution completed successfully ===")

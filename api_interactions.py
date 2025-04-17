@@ -16,13 +16,6 @@ class GNS3ApiClient:
         self.config = self._load_config(config_path)
         self.base_url = f"{self.config['gns3_server']['protocol']}://{self.config['gns3_server']['host']}:{self.config['gns3_server']['port']}/v2"
         self.session = requests.Session()
-        
-        # Set up authentication if configured
-        if 'username' in self.config['gns3_server'] and 'password' in self.config['gns3_server']:
-            self.session.auth = (self.config['gns3_server']['username'], self.config['gns3_server']['password'])
-            
-        # Set up logging
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         
     def _load_config(self, config_path: str) -> Dict[str, Any]:
@@ -36,18 +29,29 @@ class GNS3ApiClient:
     def _request(self, method: str, endpoint: str, data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Make a request to the GNS3 API."""
         url = f"{self.base_url}/{endpoint}"
-        self.logger.debug(f"Making {method} request to {url}")
+        self.logger.info(f"Making {method} request to {url}")
     
         try:
             if method.lower() == 'get':
+                self.logger.info(f"GET Request to {url}")
+                self.logger.debug(f"Headers: {self.session.headers}")
+                self.logger.debug(f"Body: {json.dumps(data, indent=2)}")
+                self.logger.debug(f"Data: {data}")
+                self.logger.debug(f"URL: {url}")
                 response = self.session.get(url)
             elif method.lower() == 'post':
-                # Print the entire POST request details instead of just logging the data
-                print(f"POST Request to {url}")
-                print(f"Headers: {self.session.headers}")
-                print(f"Body: {json.dumps(data, indent=2)}")
+                self.logger.info(f"POST Request to {url}")
+                self.logger.debug(f"Headers: {self.session.headers}")
+                self.logger.debug(f"Body: {json.dumps(data, indent=2)}")
+                self.logger.debug(f"Data: {data}")
+                self.logger.debug(f"URL: {url}")
                 response = self.session.post(url, json=data)
             elif method.lower() == 'put':
+                self.logger.info(f"PUT Request to {url}")
+                self.logger.debug(f"Headers: {self.session.headers}")
+                self.logger.debug(f"Body: {json.dumps(data, indent=2)}")
+                self.logger.debug(f"Data: {data}")
+                self.logger.debug(f"URL: {url}")
                 response = self.session.put(url, json=data)
             elif method.lower() == 'delete':
                 response = self.session.delete(url)
@@ -163,7 +167,6 @@ class GNS3ApiClient:
  
         return self._request('post', f'projects/{project_id}/links', data)
      
-    
     def update_node(self, project_id: str, node_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Update cloud node"""
         return self._request('put', f'projects/{project_id}/nodes/{node_id}', data)
