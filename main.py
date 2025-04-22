@@ -1,6 +1,6 @@
 import json
 from dataclasses import fields
-from time import sleep
+import time
 from typing import Dict, Any, Type, Set
 from data_model import Device, Port, Vlan
 from xmlTranslate import xml_info as xml_info
@@ -336,11 +336,10 @@ except Exception as e:
 logger.debug(f"unique_folder: {unique_folder}")
 transfer_file(ssh, unique_folder)
 
+logger.info("=== Step 6/7: Starting devices ===")
 api_client.start_nodes(project_id)
 
 input("Press enter when devices are ready")
-
-logger.info("=== Step 6/7: Starting devices ===")
 
 logger.info("Started all nodes in the project")
 
@@ -351,3 +350,19 @@ for device in device_list:
         set_config(unique_folder_without_top, device, ssh)
 
 logger.info("=== Script execution completed successfully ===")
+
+start_time_1 = time.perf_counter()
+end_time_1 = time.perf_counter()
+
+start_time_2 = time.perf_counter()
+end_time_2 = time.perf_counter()
+
+start_time_3 = time.perf_counter()
+end_time_3 = time.perf_counter()
+
+start_time_4 = time.perf_counter()
+end_time_4 = time.perf_counter()
+
+
+print(f"Checkpoint 1 took: {end_time_1 - start_time_1:.2f} seconds")
+print(f"Total time was: {end_time_4 - start_time_1:.2f} seconds")
