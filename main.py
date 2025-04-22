@@ -221,7 +221,7 @@ cleanup_files()
 start_time_stamp_1 = time.perf_counter()
 #logger.info("=== Step 1/7: Scanning network ===")
 project = "test.nprj"
-run_scan(project, "Ethernet 5")
+run_scan(project, "Ethernet 2")
 run_backup(project, "169.254.1.1/16")
 end_time_stamp_1 = time.perf_counter() #Scan network
 
@@ -241,6 +241,7 @@ logger.debug(f"unique_folder: {unique_folder}")
 end_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
 
 
+input("Press enter when devices are ready")
 
 
 start_time_stamp_3 = time.perf_counter() #XML parsing & validation
