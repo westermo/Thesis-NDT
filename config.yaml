@@ -30,6 +30,6 @@ template:
   model_templates:
     #"RedFox-5528-E-F4G-T24G-LV": "template-id-for-specific-model"
     #Lynx-5528-E-F4G-T24G-LV": "af07f21c-c12f-4736-b425-55e24d49023f"
-    Lynx-3510-E-F2G-T8G-LV: "af07f21c-c12f-4736-b425-55e24d49023f"
-    Lynx-3510-E-F2G-P8G-LV: "0f9aa3c1-5c46-441b-90a6-cbaf629c6ad2"
-    Lynx-5512-E-F4G-T8G-LV: "be98b4e5-b97b-46b9-a0a7-3300572fc913"
+    Lynx-3510-E-F2G-T8G-LV: "af07f21c-c12f-4736-b425-55e24d49023f" #dennna är rätt
+    Lynx-3510-E-F2G-P8G-LV: "0f9aa3c1-5c46-441b-90a6-cbaf629c6ad2" #egentligen fel modell
+    Lynx-5512-E-F4G-T8G-LV: "be98b4e5-b97b-46b9-a0a7-3300572fc913" #egentligen fel modell
