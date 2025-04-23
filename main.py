@@ -5,8 +5,6 @@ from scp import SCPClient
 from datetime import datetime
 import paramiko
 
-
-
 import json
 import time
 import subprocess
@@ -88,6 +86,7 @@ def run_backup(path, ip):
         #Command to run weconfig in windows!
 
 def transfer_file(ssh_client, folder_path):
+    """Transfer a folder to the remote server using SCP."""
     logger.info(f"Transferring folder {folder_path} via SCP")
     try:
         scp = SCPClient(ssh_client.get_transport())
@@ -206,7 +205,9 @@ def get_newest_file(directory: str) -> str:
 
 # setup logging
 # level alternatives: CRITICAL, ERROR, WARNING, INFO, DEBUG
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 logger = logging.getLogger(__name__)
 
 # logger level for this module
@@ -219,44 +220,39 @@ logging_level = logging.ERROR
 logging.getLogger("paramiko").setLevel(logging_level)
 
 
+""" cleanup_files()
 
-cleanup_files()
-
-#hej = 0
-#if hej == 1:
 start_time_stamp_1 = time.perf_counter()
 #logger.info("=== Step 1/7: Scanning network ===")
 project = "test.nprj"
-run_scan(project, "Ethernet 2")
+run_scan(project, "Ethernet 2") # ensure this is correct adapter name
 run_backup(project, "169.254.1.1/16")
-end_time_stamp_1 = time.perf_counter() #Scan network
+end_time_stamp_1 = time.perf_counter() #Scan network """
 
+# for debugging purposes
+project = "test.nprj"
 
-
-
-start_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
+#start_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
 unique_folder = create_unique_folder("./topologies", "project")
 extract_zip(project, f"{unique_folder}")
 #print(f"Extracted project to {unique_folder}")
-logger.info("=== Step 2/7: Parsing device information ===")
+#logger.info("=== Step 2/7: Parsing device information ===")
 #unique_folder = "topologies/project_250416_1708"
 unique_folder_without_top = unique_folder.split("/")[1]
-logger.debug(f"unique_folder_without_top: {unique_folder_without_top}")
-logger.debug(f"unique_folder: {unique_folder}")
+#logger.debug(f"unique_folder_without_top: {unique_folder_without_top}")
+#logger.debug(f"unique_folder: {unique_folder}")
+#end_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
 
-end_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
-
-
-input("Press enter when devices are ready")
-
-
-start_time_stamp_3 = time.perf_counter() #XML parsing & validation
+""" start_time_stamp_3 = time.perf_counter() #XML parsing & validation
 # list to store devices
 device_list: list[Device] = []
 xml = xml_info(f"{unique_folder}\Project.xml")
 xml.findDevices()
 devices_dict = xml.device_list
-devices_dict["cloud"] = {"name": "cloud", "id": "cloud", "family": "cloud", "ports": {"virbr0": {}}}
+devices_dict["cloud"] = {"name": "cloud", 
+                         "id": "cloud", 
+                         "family": "cloud", 
+                         "ports": {"virbr0": {}}}
 
 # Iterate through the dictionary and create Device objects
 for device_id, device_data in devices_dict.items():
@@ -308,16 +304,16 @@ if logging_level == logging.DEBUG:
         for vlan_id, vlan in device.vlans.items():
             for vlan_attr, vlan_value in vlan.__dict__.items():
                 logger.debug(f"    {vlan_attr}: {vlan_value}")
-end_time_stamp_3 = time.perf_counter() #XML parsing & validation
+end_time_stamp_3 = time.perf_counter() #XML parsing & validation """
 
 
 
 
-logger.info("=== Step 3/7: Building GNS3 topology ===")
+""" logger.info("=== Step 3/7: Building GNS3 topology ===")
 
 
 
-start_time_stamp_4 = time.perf_counter() #Checking existing project, delete if it exists
+#start_time_stamp_4 = time.perf_counter() #Checking existing project, delete if it exists
 api_client = GNS3ApiClient()
 
 # set logger level in api_client
@@ -325,24 +321,24 @@ api_client = GNS3ApiClient()
 api_client.logger.setLevel(logging_level)
 
 projects = api_client.get_projects()
-logger.info(f"Connection successful! Found {len(projects)} projects.")
+#logger.info(f"Connection successful! Found {len(projects)} projects.")
 
 for dict in projects:
     if dict["name"] == "auto_1":
         id = dict["project_id"]
         api_client.delete_project(id)
         logger.info("Deleted project auto_1")
-end_time_stamp_4 = time.perf_counter() #Checking existing project, delete if it exists
+#end_time_stamp_4 = time.perf_counter() #Checking existing project, delete if it exists
 
 
 
 
 
-logger.info("Building network topology in GNS3...")
+#logger.info("Building network topology in GNS3...")
 
 
 
-start_time_stamp_5 = time.perf_counter() #Building topology
+#start_time_stamp_5 = time.perf_counter() #Building topology
 # Create or get project and build devices
 topology_builder = TopologyBuilder()
 
@@ -357,7 +353,7 @@ topology_builder.logger.setLevel(logging_level)
 try:
     node_mapping = topology_builder.build_topology(device_list)
     
-    logger.info(f"Successfully created topology with {len(node_mapping)} devices")
+    #logger.info(f"Successfully created topology with {len(node_mapping)} devices")
     
     # Save node mapping for link creation (secondary goal)
     with open("node_mapping.json", "w") as f:
@@ -405,12 +401,12 @@ end_time_stamp_6 = time.perf_counter() #Creating links
 
 
 
-logger.info("=== Step 5/7: Transferring configuration files ===")
+logger.info("=== Step 5/7: Transferring configuration files ===")"""
 
 
 
 
-start_time_stamp_7 = time.perf_counter() #Connecting to server
+#start_time_stamp_7 = time.perf_counter() #Connecting to server
 ssh = paramiko.SSHClient()
 ssh.load_system_host_keys()
 try:
@@ -418,21 +414,22 @@ try:
     logger.info("Successfully connected to SSH server")
 except Exception as e:
     logger.error(f"Failed to connect to SSH server: {str(e)}")
-end_time_stamp_7 = time.perf_counter() #Connecting to server
+#end_time_stamp_7 = time.perf_counter() #Connecting to server
+
+
+
+#logger.debug(f"unique_folder: {unique_folder}")
 
 
 
 
-logger.debug(f"unique_folder: {unique_folder}")
-
-
-
-
-start_time_stamp_8 = time.perf_counter() #Transfering files
+#start_time_stamp_8 = time.perf_counter() #Transfering files
+logger.info("Transferring files to server...")
+logger.debug(f"Transferring folder {unique_folder} via SCP")
 transfer_file(ssh, unique_folder)
-end_time_stamp_8 = time.perf_counter() #Transfering files
+#end_time_stamp_8 = time.perf_counter() #Transfering files
 
-
+""" 
 logger.info("=== Step 6/7: Starting devices ===")
 
 
@@ -500,4 +497,5 @@ logger.info("=== Step 11/7: Extracting backup file ===")
 #Extract nprj file
 extract_zip("output.nprj", "./gns3_backups")
 
-#Use python version of restore.sh to restore backup on physical devices. 
+#Use python version of restore.sh to restore backup on physical devices.  
+"""
