@@ -1,27 +1,33 @@
-import json
-from dataclasses import fields
-import time
 from typing import Dict, Any, Type, Set
 from data_model import Device, Port, Vlan
-from xmlTranslate import xml_info as xml_info
+from dataclasses import fields
+from scp import SCPClient
+from datetime import datetime
+import paramiko
 
-from api_interactions import GNS3ApiClient
-from topology_builder import TopologyBuilder
 
-from connections import connections
-from link_builder import LinkBuilder
 
+import json
+import time
 import subprocess
 import os
 import zipfile
 import argparse
 import platform
-from datetime import datetime
 import random
 import shutil
-import paramiko
-from scp import SCPClient
 import logging
+
+from xmlTranslate import xml_info as xml_info
+from link_builder import LinkBuilder
+from connections import connections
+from api_interactions import GNS3ApiClient
+from topology_builder import TopologyBuilder
+
+# On Oskar's computer, the path to the new WeConfig is:
+# ~\AppData\Local\WeConfig-dev-cli\current\WeConfig.exe
+
+# On the server, the path to the new WeConfig is the same
 
 def cleanup_files(topologies_path="./topologies"):
     """Remove all content in the topologies directory and the test.nprj file."""
