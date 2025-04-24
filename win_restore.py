@@ -4,10 +4,12 @@ import re
 import warnings
 from pathlib import Path
 
-# Suppress InsecureRequestWarning for unverified HTTPS
-warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
 def restore_backup(username, password, address, file_path):
+    
+    # Suppress InsecureRequestWarning for unverified HTTPS
+    warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+    
     print(f"Attempting to restore backup from {address}.")
     print("Authenticating...")
     
