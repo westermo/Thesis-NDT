@@ -21,6 +21,8 @@ from link_builder import LinkBuilder
 from connections import connections
 from api_interactions import GNS3ApiClient
 from topology_builder import TopologyBuilder
+from win_restore import restore_backup
+
 
 # On Oskar's computer, the path to the new WeConfig is:
 # ~\AppData\Local\WeConfig-dev-cli\current\WeConfig.exe
@@ -494,6 +496,10 @@ get_file(ssh, '~/output.nprj')
 logger.info("=== Step 11/7: Extracting backup file ===")
 #Extract nprj file
 extract_zip("output.nprj", "./gns3_backups")
+
+
+
+
 
 #ssh.close()
 
