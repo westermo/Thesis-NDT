@@ -1,11 +1,20 @@
 import requests
 import sys
-from requests.auth import HTTPBasicAuth
+import re
+import warnings
+from pathlib import Path
 
-def backup(username, password, host, file):
-    print(f"Attempting to restore backup from {host}.")
+# Suppress InsecureRequestWarning for unverified HTTPS
+warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+
+def restore_backup(username, password, address, file_path):
+    print(f"Attempting to restore backup from {address}.")
     print("Authenticating...")
-
+    
+    # Create a session to maintain cookies
+    session = requests.Session()
+    
+    # Authentication request
     login_data = {
         'action': 'login',
         'restore_action': 'environment',
@@ -14,42 +23,92 @@ def backup(username, password, host, file):
         'uname': username,
         'pass': password
     }
-
-    session = requests.Session()
-    response = session.post(host, data=login_data, verify=False)
     
-    if response.status_code == 200:
-        sid_cookie = response.cookies.get('sid')
-        print(f"Session id is {sid_cookie}")
-        
-        print("Getting backup...")
-        backup_data = {
-            'action': 'backup',
-            'command': 'restore'
-        }
-        files = {'restore_file': open(file, 'rb')}
-        response = session.post(host, data=backup_data, files=files, verify=False)
-        
-        if response.status_code == 200:
-            print("Backup complete")
-            print("Firmware upgrade complete")
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    
+    # Make the login request
+    login_response = session.post(
+        address, 
+        data=login_data, 
+        headers=headers, 
+        verify=False
+    )
+    
+    # Save login response to extract session ID
+    with open('login.html', 'w', encoding='utf-8') as f:
+        f.write(login_response.text)
+    
+    # Extract session ID from HTML similar to bash script
+    sid_cookie = None
+    try:
+        with open('login.html', 'r', encoding='utf-8') as f:
+            login_html = f.read()
+            
+        # This mimics the bash grep | sed commands
+        # Looking for something like "&amp;sid=12345" in the HTML
+        match = re.search(r'&amp;(sid[^"]*)', login_html)
+        if match:
+            sid_cookie = match.group(1)
+            print(f"Session id is {sid_cookie}")
         else:
-            print("Failed to get backup")
+            print("Failed to extract session ID from HTML")
+            return
+    except Exception as e:
+        print(f"Failed to extract session ID: {e}")
+        return
+    
+    # Prepare the restore request
+    backup_data = {
+        'action': 'backup',
+        'command': 'restore'
+    }
+    
+    # Open the file for the restore operation
+    with open(file_path, 'rb') as f:
+        files = {'restore_file': f}
+        
+        # Make the restore request with multipart/form-data
+        print("Getting backup...")
+        
+        # Use the session ID as a cookie
+        cookies = {}
+        if '=' in sid_cookie:
+            name, value = sid_cookie.split('=', 1)
+            cookies[name] = value
+        
+        restore_response = session.post(
+            address,
+            data=backup_data,
+            files=files,
+            cookies=cookies,
+            verify=False
+        )
+    
+    if restore_response.status_code == 200:
+        print("Backup complete")
+        print("Firmware upgrade complete")
     else:
-        print("Authentication failed")
-
+        print(f"Restore failed with status code: {restore_response.status_code}")
+        print(f"Response: {restore_response.text[:100]}...")
+    
+    # Clean up temporary files
+    try:
+        Path('login.html').unlink(missing_ok=True)
+    except Exception:
+        pass
+    
     session.close()
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: python backup.py <username> <password> <address> <file>")
+        print("Usage: python restore.py <username> <password> <address> <file>")
         sys.exit(1)
-
+    
     username = sys.argv[1]
     password = sys.argv[2]
-    host = sys.argv[3]
-    file = sys.argv[4]
-
-    backup(username, password, host, file)
-
-#run by "python3 \win_restore.py username password host file"
+    address = sys.argv[3]
+    file_path = sys.argv[4]
+    
+    restore_backup(username, password, address, file_path)
