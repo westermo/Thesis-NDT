@@ -177,11 +177,11 @@ def get_hostname(device):
     device_hostname = f"{device.family}-{mac_suffix}.local"
     return device_hostname
 
-def extract_zip(zip_path, extract_to=None):
-    # If no extraction path is provided, extract to the same directory as the ZIP file
-    if extract_to is None:
-        extract_to = os.path.dirname(os.path.abspath(zip_path))
-
+def extract_zip(zip_path, extract_to):
+    """
+    Extracts a ZIP file to the specified directory.
+    """
+    
     # Extract the files
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
@@ -268,7 +268,8 @@ project = "test.nprj"
 
 start_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
 unique_folder = create_unique_folder("./topologies", "project")
-extract_zip(project, f"{unique_folder}")
+logger.debug(f"extracting to: {unique_folder}")
+extract_zip(project, unique_folder)
 print(f"Extracted project to {unique_folder}")
 logger.info("=== Step 2/7: Parsing device information ===")
 unique_folder_without_top = unique_folder.split("\\")[1]
