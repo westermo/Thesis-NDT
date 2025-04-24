@@ -29,6 +29,31 @@ from win_restore import restore_backup
 
 # On the server, the path to the new WeConfig is the same
 
+def find_matching_devices_by_mac(list1, list2):
+    """
+    Find devices with matching base_mac values between two lists.
+    Returns a list of tuples with matching devices (device_from_list1, device_from_list2).
+    """
+    # Create dictionary with base_mac as key for O(1) lookups
+    mac_to_device = {}
+    for device in list1:
+        # Only add devices with valid MAC addresses
+        if device.base_mac is not None and device.base_mac != "":
+            mac_to_device[device.base_mac] = device
+    
+    # Find matches in list2
+    matches = []
+    for device2 in list2:
+        # First check if device2 has a valid MAC address
+        if device2.base_mac is not None and device2.base_mac != "":
+            # Then check if that MAC address exists in our lookup dictionary
+            if device2.base_mac in mac_to_device:
+                # We found a match - add the pair to our results
+                device1 = mac_to_device[device2.base_mac]
+                matches.append((device1, device2))
+    
+    return matches
+
 def cleanup_files(topologies_path="./topologies"):
     """Remove all content in the topologies directory and the test.nprj file."""
     
@@ -184,6 +209,7 @@ def create_folder(folder_path, name):
     folder_path = os.path.join(folder_path, folder_name)
     os.makedirs(folder_path, exist_ok=True)
     logger.debug(f'Created fodler {folder_path}')
+    return folder_path
 
 def get_newest_file(directory: str) -> str:
     """Returns the filename (as a string) of the newest file in the directory"""
@@ -245,7 +271,7 @@ unique_folder = create_unique_folder("./topologies", "project")
 extract_zip(project, f"{unique_folder}")
 print(f"Extracted project to {unique_folder}")
 logger.info("=== Step 2/7: Parsing device information ===")
-unique_folder_without_top = unique_folder.split("/")[1]
+unique_folder_without_top = unique_folder.split("\\")[1]
 logger.debug(f"unique_folder_without_top: {unique_folder_without_top}")
 logger.debug(f"unique_folder: {unique_folder}")
 end_time_stamp_2 = time.perf_counter() #Creating folder and extracting 
@@ -479,6 +505,9 @@ logger.info(f"Run time was: {end_time_stamp_10 - start_time_stamp_1 - time_to_st
 logger.info(f"Total time was: {end_time_stamp_10 - start_time_stamp_1:.2f} seconds")
 
 
+input("Press enter to continue")
+
+
 logger.info("=== Step 8/7: scan GNS3 network ===")
 stdin, stdout, stderr = ssh.exec_command(f"./publish/weconfig discover --adapterNameOrId virbr0 \
                  --useMdns --useIpConfig -p ./output.nprj")
@@ -506,9 +535,11 @@ extract_zip("output.nprj", gns3_folder)
 
 
 device_list_gns3: list[Device] = []
-xml_gns3 = xml_info.deviceList(f"{gns3_folder}/Project.xml")
-xml.findDevices()
-devices_dict = xml.device_list
+xml_gns3_path = os.path.join(gns3_folder, "Project.xml")
+xml_gns3 = xml_info(xml_gns3_path)
+xml_gns3.findDevices()
+
+devices_dict = xml_gns3.device_list
 
 # Iterate through the dictionary and create Device objects
 for device_id, device_data in devices_dict.items():
@@ -538,7 +569,7 @@ for device_id, device_data in devices_dict.items():
             device.vlans[vlan_id] = vlan
         
         # Add the device to our list
-        device_list.append(device)
+        device_list_gns3.append(device)
         
     except Exception as e:
         logger.error(f"Error creating device {device_id}: {e}")
@@ -546,7 +577,24 @@ for device_id, device_data in devices_dict.items():
         # Put ports back in device_data for future reference
         device_data["ports"] = ports_data
 
-print(device_list_gns3[0].base_mac)
+
+matches = find_matching_devices_by_mac(device_list, device_list_gns3)
+logger.debug(f"Matches: {matches}")
+
+for match in matches:
+    logger.debug(f"Match: {match[0].name} - {match[1].name}")
+    logger.debug(f"Match: {match[0].base_mac} - {match[1].base_mac}")
+    logger.debug(f"Match: {match[0].ip_address} - {gns3_folder}/{match[1].id}.json")
+    ip = f"https://{match[0].ip_address}"
+    path = f"{gns3_folder}/{match[1].id}.json"
+    file_to_restore = get_newest_file(f"{gns3_folder}\\Configuration Backups\\{match[1].id}")
+    logger.debug(f"File to restore: {file_to_restore}")
+    path_to_conf = os.path.join(gns3_folder, "Configuration Backups", match[1].id, file_to_restore)
+    logger.debug(f"Path to conf: {path_to_conf}")
+    restore_backup("admin", "admin", ip,  path_to_conf)
+
+
+
 #Use python version of restore.sh to restore backup on physical devices.  
 
 #for device, gns3_device in device_list_1, device_list_2:
