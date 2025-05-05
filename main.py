@@ -31,6 +31,15 @@ import randomname
 
 # On the server, the path to the new WeConfig is the same
 
+def cleanup_all_files():
+    logger.debug("=== cleaning up files ===")
+    cleanup_files("./topologies", "./test.nprj")
+    logger.debug("deleting files in topologies")
+    cleanup_files("./gns3_backups", "./output.nprj")
+    logger.debug("deleting files in gns3_backups")
+    cleanup_files_vm()
+    logger.debug("deleting files in vm")
+
 def find_matching_devices_by_mac(list1, list2):
     """
     Find devices with matching base_mac values between two lists.
@@ -100,7 +109,8 @@ def cleanup_files_vm():
     ssh_vm.exec_command("rm -rf ~/NDT/project_files/*")
     logger.debug("Removed all files in ~/NDT/project_files/")
     
-    
+    ssh_vm.close()
+     
 def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
     """
     Validate that dictionary keys match dataclass fields (excluding specified fields).
@@ -206,7 +216,6 @@ def extract_zip(zip_path, extract_to):
         zip_ref.extractall(extract_to)
         
     logger.info(f"Extracted ZIP archive to {extract_to}")
-
 #TODO should just return a unique name
 def create_unique_folder(base_path: str, prefix: str) -> str:
     """
@@ -443,14 +452,7 @@ logging_level = logging.ERROR
 # set paramiko logging level
 logging.getLogger("paramiko").setLevel(logging_level)
 
-logger.debug("=== cleaning up files ===")
-cleanup_files("./topologies", "./test.nprj")
-logger.debug("deleting files in topologies")
-cleanup_files("./gns3_backups", "./output.nprj")
-logger.debug("deleting files in gns3_backups")
-cleanup_files_vm()
-logger.debug("deleting files in vm")
-
+cleanup_all_files()
 
 start_time_stamp_1 = time.perf_counter()
 logger.info("=== Step 1/7: Scanning network ===")
@@ -845,3 +847,6 @@ logger.info(f"Round trip time: {run_time+end_time_stamp_17 - start_time_stamp_11
     #
     #base_mac device_list1
     #find hostname 
+    
+
+cleanup_all_files()
