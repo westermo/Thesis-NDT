@@ -1,0 +1,4 @@
+run_number,timestamp,success,error,scanning_physical_network,creating_folder_and_unzipping,parsing_xml_and_validating,checking_existing_project,building_topology,creating_links,connecting_to_server,transferring_files,starting_devices,setting_configuration,physical_to_ndt_delay,scanning_virtual_network,backup_ndt,transferring_backup_file,extracting_backup_file,parsing_ndt_xml,matching_devices,applying_config,ndt_to_physical_delay,round_trip_time
+1,2025-05-05 18:10:20,True,,7.9423,0.0089,0.001,0.5633,0.5019,0.148,0.0823,0.192,54.8014,2.04,11.4818,16.7787,2.4684,0.0661,0.0067,0.0011,0.0001,0.4339,19.7561,31.2379
+2,2025-05-05 18:14:41,True,,7.9548,0.0087,0.0014,0.4876,0.5097,0.1583,0.0885,0.2022,59.6952,18.5407,27.9537,17.3848,2.4095,0.0661,0.0086,0.0011,0.0004,1.4049,21.2777,49.2314
+3,2025-05-05 18:19:28,True,,8.0876,0.0088,0.0017,0.3479,0.501,0.1606,0.0834,0.1876,57.961,4.9217,14.3019,17.0398,2.4713,0.0929,0.0468,0.0014,0.0003,1.4033,21.0582,35.3601

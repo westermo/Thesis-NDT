@@ -684,30 +684,32 @@ for device in device_list:
         set_config(unique_folder_without_top , device, ssh) 
 end_time_stamp_10 = time.perf_counter()
 
-logger.info("=== Script execution completed successfully ===")
-
-
-logger.info(f"scanning the network took: {end_time_stamp_1 - start_time_stamp_1:.2f} seconds")
-logger.info(f"Creating unique folder and unzipping: {end_time_stamp_2 - start_time_stamp_2:.2f} seconds")
-logger.info(f"Parsing XML and validating: {end_time_stamp_3 - start_time_stamp_3:.2f} seconds")
-logger.info(f"Checking existing project and deleting if it exists: {end_time_stamp_4 - start_time_stamp_4:.2f} seconds")
-logger.info(f"Building topology took: {end_time_stamp_5 - start_time_stamp_5:.2f} seconds")
-logger.info(f"Creating links took: {end_time_stamp_6 - start_time_stamp_6:.2f} seconds")
-logger.info(f"Connecting to server took: {end_time_stamp_7 - start_time_stamp_7:.2f} seconds")
-logger.info(f"Transferring files took: {end_time_stamp_8 - start_time_stamp_8:.2f} seconds")
-logger.info(f"Starting devices took: {end_time_stamp_9 - start_time_stamp_9:.2f} seconds")
-logger.info(f"Setting configuration took: {end_time_stamp_10 - start_time_stamp_10:.2f} seconds")
+logger.info("=== Step 8/7: Printing timing info ===")
+# Standard format logging for timing information
+logger.info(f"scanning_physical_network:{end_time_stamp_1 - start_time_stamp_1:.4f}")
+logger.info(f"creating_folder_and_unzipping:{end_time_stamp_2 - start_time_stamp_2:.4f}")
+logger.info(f"parsing_xml_and_validating:{end_time_stamp_3 - start_time_stamp_3:.4f}")
+logger.info(f"checking_existing_project:{end_time_stamp_4 - start_time_stamp_4:.4f}")
+logger.info(f"building_topology:{end_time_stamp_5 - start_time_stamp_5:.4f}")
+logger.info(f"creating_links:{end_time_stamp_6 - start_time_stamp_6:.4f}")
+logger.info(f"connecting_to_server:{end_time_stamp_7 - start_time_stamp_7:.4f}")
+logger.info(f"transferring_files:{end_time_stamp_8 - start_time_stamp_8:.4f}")
+logger.info(f"starting_devices:{end_time_stamp_9 - start_time_stamp_9:.4f}")
+logger.info(f"setting_configuration:{end_time_stamp_10 - start_time_stamp_10:.4f}")
 
 time_to_start_nodes = end_time_stamp_9 - start_time_stamp_9
-run_time = end_time_stamp_10 - start_time_stamp_1 - time_to_start_nodes
-logger.info(f"Run time was: {end_time_stamp_10 - start_time_stamp_1 - time_to_start_nodes:.2f} seconds")
-logger.info(f"One way delay, physical to NDT: {end_time_stamp_10 - start_time_stamp_1:.2f} seconds")
+#run_time = end_time_stamp_10 - start_time_stamp_1 - time_to_start_nodes
+#logger.info(f"run_time:{run_time:.4f}")
+#logger.info(f"physical_to_ndt_delay:{end_time_stamp_10 - start_time_stamp_1:.4f}")
+physical_to_ndt_delay = end_time_stamp_10 - start_time_stamp_1 - time_to_start_nodes
+logger.info(f"physical_to_ndt_delay:{physical_to_ndt_delay:.4f}")
 
 #input("Press enter to continue")
-
+logger.info("Sleeping 40s")
 time.sleep(40)
 #TODO wait for textoutput from device before proceeding
 
+logger.info("=== Step 8/7: Changing hostnames ===")
 name = random_new_name()
 logger.debug(f"Name: {name}")
 name2 = random_new_name()
@@ -722,6 +724,7 @@ change_hostname(f"{device_list[1].name}.local", name)
 
 change_hostname(f"{device_list[0].name}.local", name2)
 
+logger.info("Sleeping 20s")
 time.sleep(20)
 #TODO wait for textoutput from device before proceeding
 
@@ -828,18 +831,20 @@ for match in matches:
     restore_backup("admin", "admin", ip,  path_to_conf)
 end_time_stamp_17 = time.perf_counter()
 
+# Standard format logging for timing information - second phase
+logger.info(f"scanning_virtual_network:{end_time_stamp_11 - start_time_stamp_11:.4f}")
+logger.info(f"backup_ndt:{end_time_stamp_12 - start_time_stamp_12:.4f}")
+logger.info(f"transferring_backup_file:{end_time_stamp_13 - start_time_stamp_13:.4f}")
+logger.info(f"extracting_backup_file:{end_time_stamp_14 - start_time_stamp_14:.4f}")
+logger.info(f"parsing_ndt_xml:{end_time_stamp_15 - start_time_stamp_15:.4f}")
+logger.info(f"matching_devices:{end_time_stamp_16 - start_time_stamp_16:.4f}")
+logger.info(f"applying_config:{end_time_stamp_17 - start_time_stamp_17:.4f}")
 
+ndt_to_physical_delay = end_time_stamp_17 - start_time_stamp_11
+logger.info(f"ndt_to_physical_delay:{ndt_to_physical_delay:.4f}")
 
-logger.info(f"Scanning the NDT took: {end_time_stamp_11 - start_time_stamp_11:.2f} seconds")
-logger.info(f"Backup NDT took: {end_time_stamp_12 - start_time_stamp_12:.2f} seconds")
-logger.info(f"Transfering backup file took: {end_time_stamp_13 - start_time_stamp_13:.2f} seconds")
-logger.info(f"Extracting backup file took: {end_time_stamp_14 - start_time_stamp_14:.2f} seconds")
-logger.info(f"Parsing NDT XML and validating keys took: {end_time_stamp_15 - start_time_stamp_15:.2f} seconds")
-logger.info(f"Matching NDT and real world devices took: {end_time_stamp_16 - start_time_stamp_16:.2f} seconds")
-logger.info(f"Applying config to physical twin took: {end_time_stamp_17 - start_time_stamp_17:.2f} seconds")
-logger.info(f"One way delay, NDT to physical: {end_time_stamp_17 - start_time_stamp_11:.2f} seconds")
-ndt_to_physical = end_time_stamp_17 - start_time_stamp_11
-logger.info(f"Round trip time: {run_time+end_time_stamp_17 - start_time_stamp_11:.2f} seconds")
+round_trip_time = physical_to_ndt_delay + (end_time_stamp_17 - start_time_stamp_11)
+logger.info(f"round_trip_time:{round_trip_time:.4f}")
 
 #Use python version of restore.sh to restore backup on physical devices.  
 
