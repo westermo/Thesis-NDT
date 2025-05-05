@@ -23,6 +23,8 @@ from api_interactions import GNS3ApiClient
 from topology_builder import TopologyBuilder
 from win_restore import restore_backup
 
+import randomname   
+
 
 # On Oskar's computer, the path to the new WeConfig is:
 # ~\AppData\Local\WeConfig-dev-cli\current\WeConfig.exe
@@ -54,7 +56,7 @@ def find_matching_devices_by_mac(list1, list2):
     
     return matches
 
-def cleanup_files(topologies_path="./topologies"):
+def cleanup_files(topologies_path, test_file):
     """Remove all content in the topologies directory and the test.nprj file."""
     
     try:
@@ -72,7 +74,6 @@ def cleanup_files(topologies_path="./topologies"):
                     logger.error(f"Failed to delete {item_path}: {str(e)}")
                     
         # Remove test.nprj file
-        test_file = "./test.nprj"
         if os.path.exists(test_file):
             try:
                 os.remove(test_file)
@@ -81,7 +82,25 @@ def cleanup_files(topologies_path="./topologies"):
                 logger.error(f"Failed to delete {test_file}: {str(e)}")
     except Exception as e:
         logger.error(f"Error during cleanup: {str(e)}")
- 
+        
+def cleanup_files_vm():
+    ssh_vm = paramiko.SSHClient()
+    ssh_vm.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_vm.load_system_host_keys()
+    
+    try:
+        logger.debug(f"Connecting to GNS3-server:")
+        ssh_vm.connect(hostname='10.2.100.235', username='it')
+    except Exception as e:
+        logger.error(f"Failed to connect to SSH server: {str(e)}")
+        return
+    
+    ssh_vm.exec_command("rm ~/output.nprj")
+    logger.debug("Removed ~/output.nprj")
+    ssh_vm.exec_command("rm -rf ~/NDT/project_files/*")
+    logger.debug("Removed all files in ~/NDT/project_files/")
+    
+    
 def validate_dict_keys(data_dict: Dict[str, Any], dataclass_type: Type, exclude_fields: list = None) -> bool:
     """
     Validate that dictionary keys match dataclass fields (excluding specified fields).
@@ -237,6 +256,177 @@ def get_newest_file(directory: str) -> str:
         
     return newest_file
 
+def change_hostname(hostname, new_name):
+    ssh1 = paramiko.SSHClient()
+    ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh1.load_system_host_keys()
+    
+    try:
+        logger.debug(f"Connecting to GNS3-server:")
+        ssh1.connect(hostname='10.2.100.235', username='it')
+        logger.debug("Successfully connected to SSH server")
+        
+        # Create an interactive shell session
+        channel = ssh1.invoke_shell()
+        channel.settimeout(None)  # No timeout
+        
+        # Function to wait for output continuously with optional timeout
+        def wait_and_log_output(check_for=None, respond_with=None, timeout=None):
+            """
+            Wait for output and log it.
+            If timeout is None, wait indefinitely until output is received.
+            """
+            buffer = ""
+            start_time = time.time()
+            
+            while True:
+                # Check timeout only if specified
+                if timeout is not None and (time.time() - start_time > timeout):
+                    logger.debug(f"Timeout after {timeout} seconds")
+                    return buffer
+                
+                # Small sleep to avoid CPU spinning
+                time.sleep(0.5)
+                
+                if channel.recv_ready():
+                    chunk = channel.recv(8192).decode('utf-8', errors='ignore')
+                    if chunk:
+                        buffer += chunk
+                        logger.debug(f"Received output: {chunk}")
+                        
+                        # If we're checking for specific text and it's found
+                        if check_for and check_for in buffer:
+                            logger.debug(f"Found expected text: '{check_for}'")
+                            if respond_with:
+                                logger.debug(f"Sending response: '{respond_with}'")
+                                channel.send(respond_with)
+                            return buffer
+                
+                # If we're not checking for specific text, return once we have some output
+                # and there's no more output ready for a moment
+                if not check_for and buffer and not channel.recv_ready():
+                    # Small additional wait to ensure no more immediate output
+                    time.sleep(1)
+                    if not channel.recv_ready():
+                        return buffer
+        
+        # Clear initial output
+        initial_output = wait_and_log_output()
+        logger.debug(f"Initial SSH server output: {initial_output}")
+        
+        # Flag to track if we need to retry due to host key change
+        retry_needed = False
+        
+        # Try SSH connection (with potential retry)
+        for attempt in range(2):  # At most 2 attempts
+            if attempt > 0:
+                logger.debug(f"Retry attempt {attempt} for SSH connection")
+            
+            # Send the SSH command
+            logger.debug(f"Starting SSH connection to {hostname}")
+            channel.send(f"ssh admin@{hostname}\n")
+            
+            # Wait for first response - NO TIMEOUT here
+            ssh_response = wait_and_log_output()
+            
+            # Check for host key verification failure
+            if "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED" in ssh_response:
+                logger.debug("Host key has changed. Removing old key and will retry.")
+                
+                # Extract the command to remove the key from the message
+                key_remove_cmd = None
+                for line in ssh_response.splitlines():
+                    if "ssh-keygen -f" in line and "-R" in line:
+                        key_remove_cmd = line.strip()
+                        break
+                
+                if key_remove_cmd:
+                    logger.debug(f"Running command: {key_remove_cmd}")
+                    channel.send(f"{key_remove_cmd}\n")
+                    
+                    # Wait for command completion - NO TIMEOUT
+                    key_remove_output = wait_and_log_output()
+                    logger.debug(f"Key removal output: {key_remove_output}")
+                    
+                    # We need to retry the SSH connection
+                    retry_needed = True
+                    continue
+                else:
+                    logger.error("Could not find key removal command in error message")
+                    return False
+            
+            # No key error or already retried, proceed with normal connection
+            break
+        
+        # Continue with normal connection process
+        output = ssh_response
+        
+        # Check for different prompts and respond accordingly
+        while True:
+            if "Are you sure you want to continue connecting" in output:
+                logger.debug("Host key verification prompt detected, sending 'yes'")
+                channel.send("yes\n")
+                
+                # Wait for password prompt after sending yes - NO TIMEOUT
+                passwd_output = wait_and_log_output()
+                output += passwd_output
+            
+            if "password:" in output:
+                logger.debug("Password prompt detected, sending password")
+                channel.send("admin\n")
+                break
+            
+            # If we haven't seen either prompt yet, wait for more output - NO TIMEOUT
+            logger.debug("Waiting for verification or password prompt...")
+            more_output = wait_and_log_output()
+            output += more_output
+        
+        # Wait for login to complete (command prompt) - NO TIMEOUT
+        login_output = ""
+        while True:
+            new_output = wait_and_log_output()
+            login_output += new_output
+            
+            if ":/#>" in login_output:
+                logger.debug("Successfully logged in, prompt detected")
+                break
+            
+            # If we don't see the prompt yet, continue waiting
+            logger.debug("Still waiting for login prompt...")
+        
+        # Send hostname change command
+        logger.debug(f"Sending command to change hostname to {new_name}")
+        hostname_command = f"config hostname {new_name} le\n"
+        channel.send(hostname_command)
+        
+        time.sleep(10)
+        
+        save_command = "copy run start\n"
+        logger.debug(f"Sending command to save configuration: {save_command}")
+        channel.send(save_command)
+        
+        time.sleep(10)
+        
+        # Wait for command completion - reasonable timeout ok here (30 sec)
+        #cmd_output = wait_and_log_output(timeout=30)
+        #logger.debug(f"Output after hostname change: {cmd_output}")
+        
+        ssh1.close()
+        
+    except Exception as e:
+        logger.error(f"Failed in change_hostname: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        if 'ssh1' in locals() and ssh1:
+            ssh1.close()
+        return False
+    
+def random_new_name():
+    """Generate a random hostname using the randomname library."""
+    name = randomname.generate(('names/codenames/intel'))
+    return name
+
+
 # setup logging
 # level alternatives: CRITICAL, ERROR, WARNING, INFO, DEBUG
 logging.basicConfig(level=logging.INFO, 
@@ -253,8 +443,14 @@ logging_level = logging.ERROR
 # set paramiko logging level
 logging.getLogger("paramiko").setLevel(logging_level)
 
+logger.debug("=== cleaning up files ===")
+cleanup_files("./topologies", "./test.nprj")
+logger.debug("deleting files in topologies")
+cleanup_files("./gns3_backups", "./output.nprj")
+logger.debug("deleting files in gns3_backups")
+cleanup_files_vm()
+logger.debug("deleting files in vm")
 
-cleanup_files()
 
 start_time_stamp_1 = time.perf_counter()
 logger.info("=== Step 1/7: Scanning network ===")
@@ -501,40 +697,68 @@ logger.info(f"Starting devices took: {end_time_stamp_9 - start_time_stamp_9:.2f}
 logger.info(f"Setting configuration took: {end_time_stamp_10 - start_time_stamp_10:.2f} seconds")
 
 time_to_start_nodes = end_time_stamp_9 - start_time_stamp_9
-
+run_time = end_time_stamp_10 - start_time_stamp_1 - time_to_start_nodes
 logger.info(f"Run time was: {end_time_stamp_10 - start_time_stamp_1 - time_to_start_nodes:.2f} seconds")
-logger.info(f"Total time was: {end_time_stamp_10 - start_time_stamp_1:.2f} seconds")
+logger.info(f"One way delay, physical to NDT: {end_time_stamp_10 - start_time_stamp_1:.2f} seconds")
 
+#input("Press enter to continue")
 
-input("Press enter to continue")
+time.sleep(40)
+#TODO wait for textoutput from device before proceeding
 
+name = random_new_name()
+logger.debug(f"Name: {name}")
+name2 = random_new_name()
+logger.debug(f"Name2: {name2}")
+while name2 == name:
+    logger.debug(f"Name2: {name2} is the same as name: {name}")
+    name2 = random_new_name()
+    logger.debug(f"name2: is now {name2}")
+logger.debug(f"Name2: {name2} is different from name: {name}")
+
+change_hostname(f"{device_list[1].name}.local", name)
+
+change_hostname(f"{device_list[0].name}.local", name2)
+
+time.sleep(20)
+#TODO wait for textoutput from device before proceeding
+
+#input("Press enter to continue")
 
 logger.info("=== Step 8/7: scan GNS3 network ===")
+start_time_stamp_11 = time.perf_counter()
 stdin, stdout, stderr = ssh.exec_command(f"./publish/weconfig discover --adapterNameOrId virbr0 \
                  --useMdns --useIpConfig -p ./output.nprj")
 output = stdout.read()
 error = stderr.read()
+end_time_stamp_11 = time.perf_counter()
 
 #Backup GNS3 network -> Paramiko to start backup on server 
 logger.info("=== Step 9/7: Backup GNS3 network ===")
+start_time_stamp_12 = time.perf_counter()
 stdin, stdout, stderr = ssh.exec_command(f"./publish/weconfig backup -s 169.254.0.0/16 -p ./output.nprj")
 output = stdout.read()
 error = stderr.read()
+end_time_stamp_12 = time.perf_counter()
 
 logger.info("===== Step 10/7: Transfering backup file ====")
+start_time_stamp_13 = time.perf_counter()
 #Send backup files to windows pc -> scp to send files to pc 
 get_file(ssh, '~/output.nprj')
+end_time_stamp_13 = time.perf_counter()
 
 logger.info("=== Step 11/7: Extracting backup file ===")
 #Extract nprj file
+start_time_stamp_14 = time.perf_counter()
 unique_folder_without_top = unique_folder.split('\\')[1]
 logger.debug(f"Unique folder without top = {unique_folder_without_top}")
 gns3_folder = create_folder("./gns3_backups", unique_folder_without_top)
 extract_zip("output.nprj", gns3_folder)
-
+end_time_stamp_14 = time.perf_counter()
 #ssh.close()
 
-
+logger.info("=== Step 11/7: Parsing XML and validating keys ===")
+start_time_stamp_15 = time.perf_counter()
 device_list_gns3: list[Device] = []
 xml_gns3_path = os.path.join(gns3_folder, "Project.xml")
 xml_gns3 = xml_info(xml_gns3_path)
@@ -577,11 +801,18 @@ for device_id, device_data in devices_dict.items():
     finally:
         # Put ports back in device_data for future reference
         device_data["ports"] = ports_data
+end_time_stamp_15 = time.perf_counter()
 
 
+logger.info("=== Step 11/7: Matching gns3 and real world devices ===")
+start_time_stamp_16 = time.perf_counter() #Find matches 
 matches = find_matching_devices_by_mac(device_list, device_list_gns3)
 logger.debug(f"Matches: {matches}")
+end_time_stamp_16 = time.perf_counter()
 
+
+logger.info("=== Step 11/7: Applying config ===")
+start_time_stamp_17 = time.perf_counter() #Apply config
 for match in matches:
     logger.debug(f"Match: {match[0].name} - {match[1].name}")
     logger.debug(f"Match: {match[0].base_mac} - {match[1].base_mac}")
@@ -593,8 +824,20 @@ for match in matches:
     path_to_conf = os.path.join(gns3_folder, "Configuration Backups", match[1].id, file_to_restore)
     logger.debug(f"Path to conf: {path_to_conf}")
     restore_backup("admin", "admin", ip,  path_to_conf)
+end_time_stamp_17 = time.perf_counter()
 
 
+
+logger.info(f"Scanning the NDT took: {end_time_stamp_11 - start_time_stamp_11:.2f} seconds")
+logger.info(f"Backup NDT took: {end_time_stamp_12 - start_time_stamp_12:.2f} seconds")
+logger.info(f"Transfering backup file took: {end_time_stamp_13 - start_time_stamp_13:.2f} seconds")
+logger.info(f"Extracting backup file took: {end_time_stamp_14 - start_time_stamp_14:.2f} seconds")
+logger.info(f"Parsing NDT XML and validating keys took: {end_time_stamp_15 - start_time_stamp_15:.2f} seconds")
+logger.info(f"Matching NDT and real world devices took: {end_time_stamp_16 - start_time_stamp_16:.2f} seconds")
+logger.info(f"Applying config to physical twin took: {end_time_stamp_17 - start_time_stamp_17:.2f} seconds")
+logger.info(f"One way delay, NDT to physical: {end_time_stamp_17 - start_time_stamp_11:.2f} seconds")
+ndt_to_physical = end_time_stamp_17 - start_time_stamp_11
+logger.info(f"Round trip time: {run_time+end_time_stamp_17 - start_time_stamp_11:.2f} seconds")
 
 #Use python version of restore.sh to restore backup on physical devices.  
 
