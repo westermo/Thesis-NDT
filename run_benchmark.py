@@ -20,7 +20,7 @@ def extract_timing_data(output_text):
         r"Starting devices took: (\d+\.\d+) seconds",
         r"Setting configuration took: (\d+\.\d+) seconds",
         r"Run time was: (\d+\.\d+) seconds",
-        r"Total time was: (\d+\.\d+) seconds" 
+        r"Total time was: (\d+\.\d+) seconds"
     ]
     
     # Dictionary to store the timing results
@@ -40,8 +40,8 @@ def extract_timing_data(output_text):
                 if step_match:
                     step_name = step_match.group(1).strip()
                 else:
-                    continue  # Skip if we can't extract a step name
-                
+                    continue # Skip if we can't extract a step name
+            
             # Store the timing value
             timing_results[step_name] = float(match.group(1))
     
@@ -50,102 +50,84 @@ def extract_timing_data(output_text):
 def run_benchmark(iterations=100, output_file="benchmark_results.csv"):
     """Run the main.py script multiple times and collect timing data."""
     
-    all_results = []
-    
     print(f"Starting benchmark with {iterations} iterations")
     print(f"Results will be saved to {output_file}")
     
-    for i in range(iterations):
-        # Create a timestamp for this run
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        print(f"\nRun {i+1}/{iterations} - {timestamp}")
-        
-        try:
-            # Run the main.py script and capture output
-            result = subprocess.run(["python", "main.py"], 
-                                    capture_output=True, 
-                                    text=True)
-            
-            # Extract timing data from the output
-            combined_output = result.stdout + result.stderr
-            timing_data = extract_timing_data(combined_output)
-            
-            # Add run metadata
-            timing_data['run_number'] = i+1
-            timing_data['timestamp'] = timestamp
-            
-            if timing_data:
-                timing_data['success'] = True
-                # Print summary of this run
-                total_time = timing_data.get('Total time', 'N/A')
-                run_time = timing_data.get('Run time', 'N/A')
-                print(f"Run completed - Total time: {total_time} seconds, Run time: {run_time} seconds")
-            else:
-                # Save output for debugging if no timing data found
-                with open(f"run_{i+1}_output.txt", "w") as f:
-                    f.write(combined_output)
-                
-                timing_data['success'] = False
-                timing_data['error'] = "No timing data found in output"
-                print(f"No timing data found. Output saved to run_{i+1}_output.txt")
-                
-            all_results.append(timing_data)
-            
-        except Exception as e:
-            print(f"Error during run {i+1}: {e}")
-            all_results.append({
-                'run_number': i+1,
-                'timestamp': timestamp,
-                'success': False,
-                'error': str(e)
-            })
-        
-        # Add a short delay between runs to prevent resource contention
-        time.sleep(1)
+    # Define a fixed order for the CSV columns
+    fixed_fieldnames = [
+        'run_number', 
+        'timestamp', 
+        'success', 
+        'error',
+        'scanning the network',
+        'Creating unique folder and unzipping',
+        'Parsing XML and validating',
+        'Checking existing project and deleting if it exists',
+        'Building topology',
+        'Creating links',
+        'Connecting to server',
+        'Transferring files',
+        'Starting devices',
+        'Setting configuration',
+        'Run time',
+        'Total time'
+    ]
     
-    # Save results to CSV
-    if all_results:
-        # Define a fixed order for the CSV columns
-        fixed_fieldnames = [
-            'run_number', 
-            'timestamp', 
-            'success', 
-            'error',
-            'scanning the network',
-            'Creating unique folder and unzipping',
-            'Parsing XML and validating',
-            'Checking existing project and deleting if it exists',
-            'Building topology',
-            'Creating links',
-            'Connecting to server',
-            'Transferring files',
-            'Starting devices',
-            'Setting configuration',
-            'Run time',
-            'Total time'
-        ]
+    # Open the CSV file for writing
+    with open(output_file, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fixed_fieldnames)
+        writer.writeheader()
         
-        # Get all column names that actually appear in our results
-        all_columns = set()
-        for result in all_results:
-            all_columns.update(result.keys())
-        
-        # Filter fixed_fieldnames to include only those that actually appear in the results
-        fieldnames = [f for f in fixed_fieldnames if f in all_columns]
-        
-        # Add any additional fields that weren't in our fixed list
-        additional_fields = sorted(list(all_columns - set(fieldnames)))
-        fieldnames.extend(additional_fields)
-        
-        with open(output_file, 'w', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(all_results)
+        for i in range(iterations):
+            # Create a timestamp for this run
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-        print(f"\nBenchmark complete. Results saved to {output_file}")
-    else:
-        print("\nNo results collected. Check for errors.")
+            print(f"\nRun {i+1}/{iterations} - {timestamp}")
+            
+            try:
+                # Run the main.py script and capture output
+                result = subprocess.run(["python", "main.py"], 
+                                        capture_output=True, 
+                                        text=True)
+                
+                # Extract timing data from the output
+                combined_output = result.stdout + result.stderr
+                timing_data = extract_timing_data(combined_output)
+                
+                # Add run metadata
+                timing_data['run_number'] = i+1
+                timing_data['timestamp'] = timestamp
+                
+                if timing_data:
+                    timing_data['success'] = True
+                    # Print summary of this run
+                    total_time = timing_data.get('Total time', 'N/A')
+                    run_time = timing_data.get('Run time', 'N/A')
+                    print(f"Run completed - Total time: {total_time} seconds, Run time: {run_time} seconds")
+                else:
+                    # Save output for debugging if no timing data found
+                    with open(f"run_{i+1}_output.txt", "w") as f:
+                        f.write(combined_output)
+                    
+                    timing_data['success'] = False
+                    timing_data['error'] = "No timing data found in output"
+                    print(f"No timing data found. Output saved to run_{i+1}_output.txt")
+                
+                writer.writerow(timing_data)
+            
+            except Exception as e:
+                print(f"Error during run {i+1}: {e}")
+                writer.writerow({
+                    'run_number': i+1,
+                    'timestamp': timestamp,
+                    'success': False,
+                    'error': str(e)
+                })
+            
+            # Add a 30-second delay between runs to prevent resource contention
+            time.sleep(30)
+    
+    print(f"\nBenchmark complete. Results saved to {output_file}")
 
 if __name__ == "__main__":
     import argparse
